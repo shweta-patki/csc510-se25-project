@@ -1,20 +1,34 @@
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import Home from "./pages/Home";
-import Broadcast from "./pages/Broadcast";
-// import Profile from "./pages/Profile";
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import PrivateRoute from './routes/PrivateRoute';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Broadcast from './pages/Broadcast';
 
-export default function App() {
+function App() {
   return (
     <BrowserRouter>
-      <nav style={{ padding: "1rem", borderBottom: "1px solid #ccc" }}>
-        <Link to="/">Home</Link> | <Link to="/broadcast">Broadcast</Link>
-      </nav>
-
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/broadcast" element={<Broadcast />} />
-        {/* <Route path="/profile" element={<Profile />} /> */}
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/" element={
+            <PrivateRoute>
+              <Home />
+            </PrivateRoute>
+          } />
+          <Route path="/broadcast" element={
+            <PrivateRoute>
+              <Broadcast />
+            </PrivateRoute>
+          } />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }
+
+export default App;
