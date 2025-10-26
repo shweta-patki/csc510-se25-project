@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
-const AuthForm = ({ isLogin = true, onSubmit }) => {
+const AuthForm = ({ isLogin = true, onSubmit, className = '' }) => {
   const { login: ctxLogin, register: ctxRegister } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,22 +21,41 @@ const AuthForm = ({ isLogin = true, onSubmit }) => {
         navigate('/');
       }
     } catch (err) {
-      setError(err.message || 'Auth failed');
+      setError(err.message || 'Authentication failed');
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className={`auth-form ${className}`}>
       {error && <p className="error">{error}</p>}
-      <div>
-        <label>Email</label>
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+
+      <div className="form-group">
+        <label htmlFor="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Enter your email"
+          required
+        />
       </div>
-      <div>
-        <label>Password</label>
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+
+      <div className="form-group">
+        <label htmlFor="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Enter your password"
+          required
+        />
       </div>
-      <button type="submit">{isLogin ? 'Login' : 'Register'}</button>
+
+      <button type="submit" className="btn btn-primary full-width">
+        {isLogin ? 'Login' : 'Register'}
+      </button>
     </form>
   );
 };

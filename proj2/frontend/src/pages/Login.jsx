@@ -22,13 +22,15 @@ const Login = () => {
     };
 
     return (
-    <div className="login-container">
-      <h2>Login</h2>
-      {error && <p className="error">{error}</p>}
-      <AuthForm onSubmit={handleLogin} isLogin />
-      <p style={{ marginTop: 12 }}>
-        Don't have an account? <Link to="/register">Register</Link>
-      </p>
+    <div className='auth-page'>
+      <div className="auth-container">
+        <h2>Login</h2>
+        {error && <p className="auth-error">{error}</p>}
+        <AuthForm onSubmit={handleLogin} isLogin className="auth-form"/>
+        <p style={{ marginTop: 12 }}>
+          Don't have an account? <Link to="/register">Register</Link>
+        </p>
+      </div>
     </div>
   );
 };

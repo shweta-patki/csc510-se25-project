@@ -1,11 +1,26 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import PrivateRoute from './routes/PrivateRoute';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Broadcast from './pages/Broadcast';
+import Profile from './pages/Profile';
+import Navbar from './components/Navbar';
+import Footer from "./components/Footer";
+
+function Layout({ children }) {
+  const location = useLocation();
+  const hideNavbar = ['/login', '/register'].includes(location.pathname);
+  return (
+    <>
+      {!hideNavbar && <Navbar />}
+      {children}
+      {!hideNavbar && <Footer/>}
+    </>
+  );
+}
 
 function App() {
   const [runs, setRuns] = useState([
@@ -21,6 +36,7 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <Layout>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -39,6 +55,7 @@ function App() {
           } />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </Layout>
       </AuthProvider>
     </BrowserRouter>
   );

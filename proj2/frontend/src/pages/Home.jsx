@@ -15,10 +15,10 @@ export default function Home({ runs }) {
 
   return (
     <div className="home-container">
-      <header className="home-header">
+      {/* <header className="home-header">
         <h1>Welcome, {user?.username ?? 'User'}</h1>
         <button onClick={handleLogout} className="btn btn-secondary">Logout</button>
-      </header>
+      </header> */}
 
       <h2>Active Runs</h2>
       <div className="runs-list">
@@ -28,10 +28,6 @@ export default function Home({ runs }) {
           runs.map((run) => <RunCard key={run.id} run={run} />)
         )}
       </div>
-      
-      <button className="btn btn-primary" onClick={() => navigate('/broadcast')}>
-        Broadcast a Run
-      </button>
     </div>
   );
 }
