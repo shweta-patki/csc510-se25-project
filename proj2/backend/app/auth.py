@@ -11,7 +11,8 @@ ALGORITHM = "HS256"
 SECRET_KEY = os.getenv("SECRET_KEY", "change_me")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "120"))
 
-pwd_context = CryptContext(schemes=["sha256_crypt"], deprecated="auto")
+# Use PBKDF2-SHA256 (no external C extensions required, avoids bcrypt backend issues on Windows)
+pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 bearer = HTTPBearer(auto_error=False)
 
 def get_password_hash(password: str) -> str:
