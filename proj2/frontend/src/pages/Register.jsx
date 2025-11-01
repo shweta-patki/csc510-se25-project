@@ -18,13 +18,15 @@ const Register = () => {
     };
 
     return (
-    <div className="register-container">
-      <h2>Register</h2>
-      {error && <p className="error">{error}</p>}
-      <AuthForm onSubmit={handleRegister} isLogin={false} />
-      <p style={{ marginTop: 12 }}>
-        Already have an account? <Link to="/login">Login</Link>
-      </p>
+    <div className='auth-page'>
+      <div className="auth-container">
+        <h2>Register</h2>
+        {error && <p className="auth-error">{error}</p>}
+        <AuthForm onSubmit={handleRegister} isLogin={false} className="auth-form"/>
+        <p style={{ marginTop: 12 }}>
+          Already have an account? <Link to="/login">Login</Link>
+        </p>
+      </div>
     </div>
   );
 };
