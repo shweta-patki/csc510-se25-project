@@ -17,6 +17,7 @@ export default function Navbar() {
       <div className="navbar-left">
         <Link to="/" className="font-semibold hover:underline">Home</Link>
         <Link to="/broadcast" className="font-semibold hover:underline">Broadcast</Link>
+        <Link to="/your-runs" className="font-semibold hover:underline">Your Runs</Link>
       </div>
 
       <div className="navbar-right">
