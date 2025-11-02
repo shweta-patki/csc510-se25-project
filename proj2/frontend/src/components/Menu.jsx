@@ -1,4 +1,3 @@
-// src/components/MenuPopup.jsx
 import React, { useState ,useEffect} from "react";
 
 export default function Menu({ restaurant, menuItems, onClose, onConfirm }) {

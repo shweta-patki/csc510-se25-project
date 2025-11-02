@@ -13,6 +13,7 @@ export default function Broadcast({ onBroadcast }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log(user)
 
     if (!restaurant || !eta) {
       setError("Please fill out both the restaurant and ETA!");

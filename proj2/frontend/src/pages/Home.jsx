@@ -9,15 +9,10 @@ import menuData from "../mock_data/menuData.json";
 export default function Home({ runs ,setRuns}) {
   const [activeRun, setActiveRun] = useState(null);
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
 
   const handleJoinClick = (run) => {
-    if (menuData[run.restaurant]) {
+    if (menuData[run.restaurant]) { //TODO: Change to API Calls when backend is ready
       setActiveRun(run); // Show popup for menu selection
     } else {
       alert(`Joining run to ${run.restaurant}`);
@@ -26,42 +21,32 @@ export default function Home({ runs ,setRuns}) {
   };
 
   const handleConfirmOrder = (selectedItems = [], run = activeRun) => {
-    if (!run) return;
-    setRuns((prevRuns) =>
-      prevRuns
-        .map((r) =>
-          r.id === run.id
-            ? {
-                ...r,
-                seats: r.seats - 1,
-                orders: [
-                  ...(r.orders || []),
-                  { user: user.username, items: selectedItems },
-                ],
-              }
-            : r
-        )
-        .filter((r) => r.seats > 0) // remove runs with no seats left
-    );
+  if (!run) return;
 
-    setActiveRun(null);
-  };
+  const updatedRuns = runs
+    .map((r) =>
+      r.id === run.id
+        ? {
+            ...r,
+            seats: r.seats - 1,
+            orders: [
+              ...(r.orders || []),
+              { user: user.username, items: selectedItems },
+            ],
+          }
+        : r
+    )
+    .filter((r) => r.seats > 0); // remove runs with no seats left
 
-  const updateSeats = (runId) => {
-    setRuns((prevRuns) =>
-      prevRuns
-        .map((r) => (r.id === runId ? { ...r, seats: r.seats - 1 } : r))
-        .filter((r) => r.seats > 0)
-    );
-  };
+  setRuns(updatedRuns);
+  localStorage.setItem("runs", JSON.stringify(updatedRuns)); //TODO: Change to API Calls when backend is ready
+
+  setActiveRun(null);
+};
+
 
   return (
     <div className="home-container">
-      {/* <header className="home-header">
-        <h1>Welcome, {user?.username ?? 'User'}</h1>
-        <button onClick={handleLogout} className="btn btn-secondary">Logout</button>
-      </header> */}
-
       <h2>Active Runs</h2>
       <div className="runs-list">
         {runs.length === 0 ? (
@@ -77,7 +62,7 @@ export default function Home({ runs ,setRuns}) {
           restaurant={activeRun.restaurant}
           menuItems={menuData[activeRun.restaurant] || []}
           onClose={() => setActiveRun(null)}
-          onConfirm={handleConfirmOrder}
+          onConfirm={(selectedItems) => handleConfirmOrder(selectedItems, activeRun)}
         />
       )}
     </div>
