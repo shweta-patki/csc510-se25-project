@@ -17,12 +17,11 @@ export default function Navbar() {
         <Link to="/" className="font-semibold hover:underline">Home</Link>
         <Link to="/broadcast" className="font-semibold hover:underline">Broadcast</Link>
         <Link to="/your-runs" className="font-semibold hover:underline">Your Runs</Link>
+        <Link to="/profile" className="font-semibold hover:underline">Profile</Link>
       </div>
 
       <div className="navbar-right">
-        <Link to="/profile" className="flex items-center gap-1">
-          <span className="navbar-username">{user?.username ?? 'User'}</span>
-        </Link>
+        <span className="navbar-username">{user?.username ?? 'User'}</span>
         <button onClick={handleLogout}>Logout</button>
       </div>
     </nav>

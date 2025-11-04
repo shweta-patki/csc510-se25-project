@@ -90,6 +90,11 @@ function App() {
               <Broadcast onBroadcast={handleAddRun}/> 
             </PrivateRoute>
           } />
+          <Route path="/profile" element={
+            <PrivateRoute>
+              <Profile />
+            </PrivateRoute>
+          } />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         </Layout>
