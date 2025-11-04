@@ -286,6 +286,17 @@ body {
   flex-direction: column;
   height: calc(100vh - 90px); /* full screen minus navbar */
   padding-top: 90px;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding-top: 80px;
+}
+.home-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 140px); /* accounts for navbar + footer height */
+  
+   /* space for fixed navbar */
+  
 }
 
 .runs-list {
@@ -297,6 +308,26 @@ body {
   padding-right: 8px;
   animation: fadeIn 0.3s ease-in-out;
 }
+
+.runs-columns {
+  display: flex;
+  gap: 2rem;
+  justify-content: space-between;
+}
+
+.runs-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.scrollable {
+  flex-grow: 1;
+  overflow-y: auto;
+  max-height: calc(100vh - 100px);
+  padding-right: 8px;
+}
+
 
 
 /* Optional: smoother scrollbar */
