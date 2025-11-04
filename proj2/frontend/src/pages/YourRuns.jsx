@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
+import { useNavigate } from 'react-router-dom';
 
 export default function YourRuns({ runs, setRuns}) {
   const [yourRuns, setYourRuns] = useState([]);
-    const { user } = useAuth();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   // Automatically updates whenever runs or user change
   useEffect(() => {
@@ -39,14 +41,27 @@ export default function YourRuns({ runs, setRuns}) {
                 <h3>{run.restaurant}</h3>
                 <span className="run-card-runner">ETA: {run.eta}</span>
               </div>
+
               <div className="run-card-body">
                 <p><strong>Seats Left:</strong> {run.seats}</p>
                 <p><strong>Orders Taken:</strong> {run.orders?.length || 0}</p>
                 {run.orders?.length > 0 && (
                   <ul>
                     {run.orders.map((o, i) => (
-                      <li key={i}>
-                        {o.user}: {o.items.join(", ")}
+                      <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <div>
+                          {o.user}: {o.items.join(", ")}
+                          {o.delivered ? (
+                            <span style={{ marginLeft: 8, color: 'green' }}>(Delivered)</span>
+                          ) : null}
+                        </div>
+                        {!o.delivered && (
+                          <div>
+                            <button className="btn btn-primary" onClick={() => navigate(`/pin/${run.id}/${i}`)}>
+                              Enter PIN
+                            </button>
+                          </div>
+                        )}
                       </li>
                     ))}
                   </ul>
