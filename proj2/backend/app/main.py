@@ -7,7 +7,7 @@ from sqlmodel import Session, select
 from sqlalchemy.exc import IntegrityError
 from contextlib import asynccontextmanager
 
-from .db import create_db_and_tables, get_session
+from .db import create_db_and_tables, get_session, ensure_user_points_column
 from .models import User, FoodRun, Order
 from .schemas import (
     AuthRequest, AuthResponse, UserOut,
@@ -29,6 +29,8 @@ load_dotenv()
 async def lifespan(app: FastAPI):
     # Create DB tables on startup
     create_db_and_tables()
+    # Ensure SQLite dev DBs have newly added columns (e.g., 'points')
+    ensure_user_points_column()
     yield
 
 
@@ -66,7 +68,7 @@ def register(payload: AuthRequest, session: Session = Depends(get_session)):
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User already exists")
 
     token = create_access_token(sub=user.id, email=user.email)
-    return {"user": {"id": user.id, "username": user.email}, "token": token}
+    return {"user": {"id": user.id, "username": user.email, "points": user.points}, "token": token}
 
 @app.post("/auth/login", response_model=AuthResponse)
 def login(payload: AuthRequest, session: Session = Depends(get_session)):
@@ -74,14 +76,14 @@ def login(payload: AuthRequest, session: Session = Depends(get_session)):
     if not user or not verify_password(payload.password, user.password_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
     token = create_access_token(sub=user.id, email=user.email)
-    return {"user": {"id": user.id, "username": user.email}, "token": token}
+    return {"user": {"id": user.id, "username": user.email, "points": user.points}, "token": token}
 
 @app.get("/auth/me", response_model=UserOut)
 def me(claims=Depends(get_current_user_claims), session: Session = Depends(get_session)):
     user = session.exec(select(User).where(User.id == int(claims["sub"]))).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
-    return {"id": user.id, "username": user.email}
+    return {"id": user.id, "username": user.email, "points": user.points}
 
 @app.post("/runs", response_model=FoodRunResponse)
 def create_run(
