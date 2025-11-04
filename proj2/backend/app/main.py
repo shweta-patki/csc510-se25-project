@@ -18,10 +18,18 @@ from .auth import (
 
 load_dotenv()
 
-app = FastAPI(title="CSC510 API")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Create DB tables on startup
+    create_db_and_tables()
+    yield
+
 
 origins_env = os.getenv("CORS_ORIGINS", "http://localhost:5173")
 origins = [o.strip() for o in origins_env.split(",") if o.strip()]
+
+app = FastAPI(title="CSC510 API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -31,16 +39,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 def root():
     return {"status": "ok"}
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    create_db_and_tables()
-    yield
-
-app = FastAPI(lifespan=lifespan)
 
 @app.post("/auth/register", response_model=AuthResponse)
 def register(payload: AuthRequest, session: Session = Depends(get_session)):
