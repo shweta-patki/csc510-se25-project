@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import restaurantsData from "./restaurants.json";
 
 export default function Broadcast({ onBroadcast }) {
   const [restaurant, setRestaurant] = useState("");
@@ -13,7 +14,6 @@ export default function Broadcast({ onBroadcast }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(user)
 
     if (!restaurant || !eta) {
       setError("Please fill out both the restaurant and ETA!");
@@ -25,9 +25,8 @@ export default function Broadcast({ onBroadcast }) {
       restaurant,
       eta,
       seats: Number(seats),
-      runner: user?.username || "Unknown", 
+      runner: user.username,
       id: Date.now(),
-      orders: [],
     });
 
     // TODO: API hit to store the new run
@@ -42,12 +41,19 @@ export default function Broadcast({ onBroadcast }) {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="restaurant">Restaurant</label>
-            <input
+            <select
               id="restaurant"
-              type="text"
               value={restaurant}
               onChange={(e) => setRestaurant(e.target.value)}
-            />
+            >
+              <option value="">-- Select a restaurant --</option>
+              {Array.isArray(restaurantsData?.restaurants) &&
+                restaurantsData.restaurants.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
+            </select>
           </div>
 
           <div className="form-group">
