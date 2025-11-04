@@ -258,6 +258,24 @@ body {
    Page: Home
    ========================================================================== */
 
+.home-columns {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.home-column {
+  flex: 1 1 45%;
+  min-width: 350px;
+}
+
+.home-column h2 {
+  border-bottom: 2px solid var(--medium-gray);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+
 .home-container {
   width: 100%;
   max-width: 900px;

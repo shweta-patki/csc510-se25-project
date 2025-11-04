@@ -12,8 +12,14 @@ export default function Home({ runs, setRuns }) {
   */
   const [activeRun, setActiveRun] = useState(null);
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleJoinClick = (run) => {
+    if (run.runner === user.username) {
+      alert("You cannot join your own run."); //Prevent joining your own run
+      return;
+    }
+
     if (menuData[run.restaurant]) { //TODO: Change to API Calls when backend is ready
       setActiveRun(run); // Show popup for menu selection
     } else {
