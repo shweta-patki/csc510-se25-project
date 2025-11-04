@@ -612,3 +612,106 @@ body {
   margin-bottom: 6px;
   font-size: 0.95rem;
 }
+
+/* ========================================================================== 
+   Page: Profile 
+   ========================================================================== */
+
+.profile-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 90px auto 2rem auto; /* leave space for fixed navbar */
+  padding: 2rem;
+  box-sizing: border-box;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.profile-section {
+  background-color: var(--white);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px var(--shadow-color);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border-top: 5px solid var(--ncsu-red);
+}
+
+.profile-section h2 {
+  color: var(--dark-gray);
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.profile-section p {
+  color: var(--dark-gray);
+  font-size: 1rem;
+  margin: 0.5rem 0;
+}
+
+.profile-points {
+  background-color: var(--white);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px var(--shadow-color);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border-left: 5px solid var(--ncsu-red);
+}
+
+.profile-points strong {
+  color: var(--ncsu-red);
+}
+
+.profile-link-card {
+  background-color: var(--white);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px var(--shadow-color);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border-left: 5px solid var(--ncsu-red);
+}
+
+.profile-link-card a {
+  background-color: var(--ncsu-red);
+  color: var(--white);
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  width: fit-content;
+}
+
+.profile-link-card a:hover {
+  background-color: var(--ncsu-red-dark);
+  transform: translateY(-2px);
+}
+
+/* --- Loading/Error states --- */
+.profile-loading,
+.profile-error {
+  text-align: center;
+  font-size: 1rem;
+  padding: 2rem;
+  color: var(--text-gray);
+}
+
+.profile-error {
+  color: var(--ncsu-red);
+  background-color: var(--error-light);
+  border: 1px solid var(--error-dark);
+  border-radius: 8px;
+}
+
+/* Smooth fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
