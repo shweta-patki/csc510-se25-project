@@ -14,15 +14,14 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="navbar-left">
-        <Link to="/" className="font-semibold hover:underline">Home</Link>
-        <Link to="/broadcast" className="font-semibold hover:underline">Broadcast</Link>
-        <Link to="/your-runs" className="font-semibold hover:underline">Your Runs</Link>
+        <Link to="/">Home</Link>
+        <Link to="/broadcast">Broadcast</Link>
+        <Link to="/your-runs">Your Runs</Link>
+        <Link to="/profile">Profile</Link>
       </div>
 
       <div className="navbar-right">
-        <Link to="/profile" className="flex items-center gap-1">
-          <span className="navbar-username">{user?.username ?? 'User'}</span>
-        </Link>
+        <span className="navbar-username">{user?.username ?? 'User'}</span>
         <button onClick={handleLogout}>Logout</button>
       </div>
     </nav>
