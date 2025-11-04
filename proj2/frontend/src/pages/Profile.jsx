@@ -2,6 +2,9 @@ import React from 'react';
 import { useAuth } from '../hooks/useAuth';
 
 export default function Profile() {
+  /* Profile page component
+    Displays user profile information
+  */
   const { user } = useAuth();
 
   return (

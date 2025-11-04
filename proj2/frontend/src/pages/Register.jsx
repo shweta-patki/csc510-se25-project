@@ -4,6 +4,10 @@ import { useAuth } from '../hooks/useAuth';
 import AuthForm from '../components/AuthForm';
 
 const Register = () => {
+  /* Register page component 
+    Handles user registration and redirects to dashboard on success
+    Error handling: displays error messages if registration fails
+  */
     const { register } = useAuth();
     const [error, setError] = useState(null);
     const navigate = useNavigate();

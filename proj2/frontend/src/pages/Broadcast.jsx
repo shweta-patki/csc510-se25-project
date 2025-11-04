@@ -76,8 +76,13 @@
 import React, { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import restaurantsData from "./restaurants.json";
 
 export default function Broadcast({ onBroadcast }) {
+  /* Broadcast page component
+    Allows users to broadcast a new food run
+    Error handling: ensures restaurant and ETA are provided
+  */
   const [restaurant, setRestaurant] = useState("");
   const [eta, setEta] = useState("");
   const [seats, setSeats] = useState(4);
@@ -115,13 +120,19 @@ export default function Broadcast({ onBroadcast }) {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="restaurant">Restaurant</label>
-            <input
+            <select
               id="restaurant"
-              type="text"
               value={restaurant}
               onChange={(e) => setRestaurant(e.target.value)}
-              placeholder="e.g., Hunt Library Creamery"
-            />
+            >
+              <option value="">-- Select a restaurant --</option>
+              {Array.isArray(restaurantsData?.restaurants) &&
+                restaurantsData.restaurants.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
+            </select>
           </div>
 
           <div className="form-group">

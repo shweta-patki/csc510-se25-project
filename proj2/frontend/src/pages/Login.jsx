@@ -4,6 +4,10 @@ import { useAuth } from '../hooks/useAuth';
 import AuthForm from '../components/AuthForm';
 
 const Login = () => {
+  /* Login page component
+    Handles user login and redirects to dashboard on success
+    Error handling: displays error messages if login fails
+  */
     const { login, user } = useAuth();
     const [error, setError] = useState(null);
     const navigate = useNavigate();

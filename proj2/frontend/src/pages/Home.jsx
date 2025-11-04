@@ -5,6 +5,9 @@ import { useAuth } from '../hooks/useAuth';
 
 
 export default function Home({ runs }) {
+  /* Home page component
+    Displays a list of active runs and user information
+  */
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 

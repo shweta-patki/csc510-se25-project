@@ -1,0 +1,27 @@
+{
+    "restaurants": [
+        "Common Grounds Cafe Hunt Library",
+        "Port City Java EBII",
+        "Hill of Beans Hill Library"
+    ],
+    "menus": {
+        "Common Grounds Cafe Hunt Library": [
+            
+        ],
+        "Port City Java EBII": [
+            "Burgers",
+            "Fries",
+            "Shakes"
+        ],
+        "Hill of Beans Hill Library": [
+            "Ice Cream",
+            "Sundaes",
+            "Milkshakes"
+        ]
+    },
+    "runners": [
+        "alice@ncsu.edu",
+        "bob@ncsu.edu",
+        "charlie@ncsu.edu"
+    ]
+}
