@@ -6,14 +6,12 @@ import { useAuth } from '../hooks/useAuth';
 import menuData from "../mock_data/menuData.json";
 
 
-export default function Home({ runs }) {
+export default function Home({ runs, setRuns }) {
   /* Home page component
     Displays a list of active runs and user information
   */
-export default function Home({ runs ,setRuns}) {
   const [activeRun, setActiveRun] = useState(null);
   const { user, logout } = useAuth();
-
 
   const handleJoinClick = (run) => {
     if (menuData[run.restaurant]) { //TODO: Change to API Calls when backend is ready
