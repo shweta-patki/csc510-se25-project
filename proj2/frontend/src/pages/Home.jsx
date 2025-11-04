@@ -6,6 +6,10 @@ import { useAuth } from '../hooks/useAuth';
 import menuData from "../mock_data/menuData.json";
 
 
+export default function Home({ runs }) {
+  /* Home page component
+    Displays a list of active runs and user information
+  */
 export default function Home({ runs ,setRuns}) {
   const [activeRun, setActiveRun] = useState(null);
   const { user, logout } = useAuth();

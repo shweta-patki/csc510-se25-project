@@ -18,10 +18,5 @@
             "Sundaes",
             "Milkshakes"
         ]
-    },
-    "runners": [
-        "alice@ncsu.edu",
-        "bob@ncsu.edu",
-        "charlie@ncsu.edu"
-    ]
+    }
 }

@@ -4,6 +4,10 @@ import { useNavigate } from "react-router-dom";
 import restaurantsData from "./restaurants.json";
 
 export default function Broadcast({ onBroadcast }) {
+  /* Broadcast page component
+    Allows users to broadcast a new food run
+    Error handling: ensures restaurant and ETA are provided
+  */
   const [restaurant, setRestaurant] = useState("");
   const [eta, setEta] = useState("");
   const [seats, setSeats] = useState(4);
