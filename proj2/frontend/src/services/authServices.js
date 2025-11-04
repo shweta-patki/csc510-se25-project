@@ -1,6 +1,26 @@
 const AUTH_KEY = 'auth';
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
 
+async function fetchWithAuth(path, options = {}) {
+    const auth = getSavedAuth();
+    if (!auth?.token) throw new Error('Not authenticated');
+    
+    const res = await fetch(`${API_BASE}${path}`, {
+        ...options,
+        headers: {
+            ...options.headers,
+            'Authorization': `Bearer ${auth.token}`,
+            'Content-Type': 'application/json',
+        },
+    });
+    if (!res.ok) {
+        let detail = 'Request failed';
+        try { const data = await res.json(); detail = data.detail || data.error || detail; } catch {}
+        throw new Error(detail + ` (${res.status})`);
+    }
+    return res.json();
+}
+
 async function postJson(path, body) {
     const res = await fetch(`${API_BASE}${path}`, {
         method: 'POST',
@@ -34,4 +54,12 @@ export function logout() {
 
 export function getSavedAuth() {
     try { return JSON.parse(localStorage.getItem(AUTH_KEY)); } catch { return null; }
+}
+
+export async function getPoints() {
+    return fetchWithAuth('/points');
+}
+
+export async function redeemPoints() {
+    return fetchWithAuth('/points/redeem', { method: 'POST' });
 }
