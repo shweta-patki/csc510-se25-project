@@ -1,4 +1,11 @@
-export default function RunCard({ run, onJoin }) {
+import { useAuth } from '../hooks/useAuth';
+
+
+export default function RunCard({ run, onJoin ,joinedRuns}) {
+  const { user, logout } = useAuth();
+  const hasJoined = joinedRuns.some((r) => r.id === run.id);
+  const isOwner = run.runner === user?.username;
+
   return (
     <div className="run-card">
       <div className="run-card-header">
@@ -15,9 +22,15 @@ export default function RunCard({ run, onJoin }) {
         <button
           className="btn btn-primary"
           onClick={() => onJoin(run)}
-          disabled={run.seats <= 0}
+          disabled={run.seats <= 0 || hasJoined || isOwner}
         >
-          {run.seats > 0 ? "Join Run" : "Full"}
+          {isOwner
+            ? "Your Run"
+            : hasJoined
+            ? "Joined"
+            : run.seats > 0
+            ? "Join Run"
+            : "Full"}
         </button>
       </div>
     </div>

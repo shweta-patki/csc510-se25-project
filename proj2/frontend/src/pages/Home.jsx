@@ -12,8 +12,14 @@ export default function Home({ runs, setRuns }) {
   */
   const [activeRun, setActiveRun] = useState(null);
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleJoinClick = (run) => {
+    if (run.runner === user.username) {
+      alert("You cannot join your own run."); //Prevent joining your own run
+      return;
+    }
+
     if (menuData[run.restaurant]) { //TODO: Change to API Calls when backend is ready
       setActiveRun(run); // Show popup for menu selection
     } else {
@@ -46,28 +52,72 @@ export default function Home({ runs, setRuns }) {
   setActiveRun(null);
 };
 
+const joinedRuns = runs.filter((r) =>
+    r.orders?.some(order => order.user === user.username)
+  );
 
-  return (
+const availableRuns = runs.filter(
+    (r) =>
+      r.runner !== user.username &&
+      !(r.orders?.some(order => order.user === user.username)) &&
+      r.seats > 0
+  );
+
+
+return (
     <div className="home-container">
-      <h2>Active Runs</h2>
-      <div className="runs-list">
-        {runs.length === 0 ? (
-          <p>No active runs yet. Broadcast one!</p>
-        ) : (
-          runs.filter((r) => r.seats > 0).map((run) => (
-          <RunCard key={run.id} run={run} onJoin={handleJoinClick} />
-        ))
-        )}
+      <div className="home-header">
+        <h1>Active Runs</h1>
       </div>
+
+      <div className="runs-columns">
+        <div className="runs-section">
+          <h3>Available Runs</h3>
+          <div className="runs-list scrollable">
+            {availableRuns.length > 0 ? (
+              availableRuns.map((run) => (
+                <RunCard
+                  key={run.id}
+                  run={run}
+                  onJoin={handleJoinClick}
+                  currentUser={user}
+                  joinedRuns={joinedRuns}
+                />
+              ))
+            ) : (
+              <p>No available runs.</p>
+            )}
+          </div>
+        </div>
+
+        <div className="runs-section">
+          <h3>Joined Runs</h3>
+          <div className="runs-list scrollable">
+            {joinedRuns.length > 0 ? (
+              joinedRuns.map((run) => (
+                <RunCard
+                  key={run.id}
+                  run={run}
+                  onJoin={handleJoinClick}
+                  currentUser={user}
+                  joinedRuns={joinedRuns}
+                />
+              ))
+            ) : (
+              <p>You haven’t joined any runs yet.</p>
+            )}
+          </div>
+        </div>
+      </div>
+
       {activeRun && (
         <Menu
           restaurant={activeRun.restaurant}
           menuItems={menuData[activeRun.restaurant] || []}
           onClose={() => setActiveRun(null)}
-          onConfirm={(selectedItems) => handleConfirmOrder(selectedItems, activeRun)}
+          onConfirm={handleConfirmOrder}
         />
       )}
     </div>
   );
 }
-
