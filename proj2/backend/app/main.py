@@ -4,6 +4,7 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session, select
 from sqlalchemy.exc import IntegrityError
+from contextlib import asynccontextmanager
 
 from .db import create_db_and_tables, get_session
 from .models import User
@@ -34,11 +35,13 @@ app.add_middleware(
 def root():
     return {"status": "ok"}
 
-@app.on_event("startup")
-def on_startup():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     create_db_and_tables()
+    yield
 
-# Auth routes
+app = FastAPI(lifespan=lifespan)
+
 @app.post("/auth/register", response_model=AuthResponse)
 def register(payload: AuthRequest, session: Session = Depends(get_session)):
     existing = session.exec(select(User).where(User.email == payload.email)).first()
@@ -51,7 +54,6 @@ def register(payload: AuthRequest, session: Session = Depends(get_session)):
         session.commit()
         session.refresh(user)
     except IntegrityError:
-        # race condition or unique constraint violation
         session.rollback()
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User already exists")
 
@@ -73,7 +75,6 @@ def me(claims=Depends(get_current_user_claims), session: Session = Depends(get_s
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
     return {"id": user.id, "username": user.email}
 
-# Example protected domain route
 @app.get("/runs")
 def list_runs(claims=Depends(get_current_user_claims)):
     runs = [

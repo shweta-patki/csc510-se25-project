@@ -490,3 +490,76 @@ body {
 .footer p {
   margin: 0;
 }
+
+/* ========================================================================== 
+   Component: Menu 
+   ========================================================================== */
+/* --- Menu Popup Styles --- */
+.menu-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 200;
+}
+
+.menu-popup-content {
+  background: var(--white);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px var(--shadow-color);
+  max-width: 400px;
+  width: 90%;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+}
+
+.menu-item {
+  padding: 10px 12px;
+  border: 1px solid var(--medium-gray);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.menu-item:hover {
+  background-color: var(--light-gray);
+}
+
+.menu-item.selected {
+  background-color: var(--ncsu-red);
+  color: var(--white);
+}
+
+.menu-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+
+.order-list {
+  list-style: none;
+  padding-left: 1rem;
+  margin-top: 0.5rem;
+}
+
+.order-list li {
+  background-color: var(--light-gray);
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+}
