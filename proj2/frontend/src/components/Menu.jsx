@@ -19,9 +19,14 @@ export default function Menu({ restaurant, menuItems, onClose, onConfirm }) {
   };
 
   const handleConfirm = () => {
+    // Only confirm when at least one item is selected. If so, generate a PIN,
+    // pass it to the parent and show it to the joining user.
     if (selectedItems.length > 0) {
-      onConfirm(selectedItems);
+      const generatedPin = String(Math.floor(1000 + Math.random() * 9000));
+      onConfirm(selectedItems, generatedPin);
       setSelectedItems([]);
+      // Show the PIN to the user so they can give it to the runner.
+      alert(`Your 4-digit PIN is ${generatedPin}. Give this to the runner when they arrive.`);
     }
     onClose();
   };
@@ -46,12 +51,14 @@ export default function Menu({ restaurant, menuItems, onClose, onConfirm }) {
         </ul>
 
         <div className="menu-actions">
-          <button className="btn btn-secondary" onClick={onClose}>
-            Cancel
-          </button>
-          <button className="btn btn-primary" onClick={handleConfirm}>
-            Confirm Order
-          </button>
+          <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
+            <button className="btn btn-secondary" onClick={onClose}>
+              Cancel
+            </button>
+            <button className="btn btn-primary" onClick={handleConfirm}>
+              Confirm Order
+            </button>
+          </div>
         </div>
       </div>
     </div>

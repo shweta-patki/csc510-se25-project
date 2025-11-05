@@ -11,6 +11,7 @@ import Register from './pages/Register';
 import Broadcast from './pages/Broadcast';
 import YourRuns from './pages/YourRuns';
 import Profile from './pages/Profile';
+import PinEntry from './pages/PinEntry';
 
 //Components
 import Navbar from './components/Navbar';
@@ -84,6 +85,12 @@ function App() {
             <PrivateRoute>
               <YourRuns runs={runs} setRuns={setRuns} />
             </PrivateRoute>}/>
+
+          <Route path="/pin/:runId/:orderIndex" element={
+            <PrivateRoute>
+              <PinEntry runs={runs} setRuns={setRuns} />
+            </PrivateRoute>
+          } />
 
           <Route path="/broadcast" element={
             <PrivateRoute>

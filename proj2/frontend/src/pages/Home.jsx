@@ -23,12 +23,14 @@ export default function Home({ runs, setRuns }) {
     if (menuData[run.restaurant]) { //TODO: Change to API Calls when backend is ready
       setActiveRun(run); // Show popup for menu selection
     } else {
-      alert(`Joining run to ${run.restaurant}`);
-      handleConfirmOrder([], run);
+      // No menu popup for this restaurant — generate a PIN and show it to the joining user
+      const generatedPin = String(Math.floor(1000 + Math.random() * 9000));
+      alert(`Joining run to ${run.restaurant}. Your 4-digit PIN is ${generatedPin}. Give this to the runner when they arrive.`);
+      handleConfirmOrder([], run, generatedPin);
     }
   };
 
-  const handleConfirmOrder = (selectedItems = [], run = activeRun) => {
+  const handleConfirmOrder = (selectedItems = [], run = activeRun, pin = null) => {
   if (!run) return;
 
   const updatedRuns = runs
@@ -39,7 +41,7 @@ export default function Home({ runs, setRuns }) {
             seats: r.seats - 1,
             orders: [
               ...(r.orders || []),
-              { user: user.username, items: selectedItems },
+              { user: user.username, items: selectedItems, pin: pin, delivered: false },
             ],
           }
         : r
@@ -115,7 +117,7 @@ return (
           restaurant={activeRun.restaurant}
           menuItems={menuData[activeRun.restaurant] || []}
           onClose={() => setActiveRun(null)}
-          onConfirm={handleConfirmOrder}
+          onConfirm={(selectedItems, pin) => handleConfirmOrder(selectedItems, activeRun, pin)}
         />
       )}
     </div>
