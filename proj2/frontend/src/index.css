@@ -418,6 +418,7 @@ body {
   bottom: 0;
   width: 5px;
   background-color: var(--ncsu-red);
+  border-radius: 12px 0 0 12px; /* match card rounding so the strip ends are crisp */
 }
 
 
@@ -460,6 +461,33 @@ body {
   background-color: #fafafa;
   border-top: 1px solid var(--light-gray);
   border-radius: 0 0 12px 12px;
+}
+
+/* Details page card variant: no fixed height, content fully visible */
+.run-card--details {
+  height: auto;   /* allow full content */
+  overflow: hidden; /* keep left strip clipped to rounded corners */
+}
+
+/* Auto-height variant for tiles that need more content (e.g., Your Runs) */
+.run-card--auto {
+  height: auto;   /* allow taller tiles without clipping content */
+  overflow: hidden; /* maintain consistent red strip edges */
+}
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.badge-active {
+  background-color: var(--ncsu-red);
+  color: var(--white);
 }
 
 /* ==========================================================================

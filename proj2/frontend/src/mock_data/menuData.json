@@ -2,13 +2,37 @@
   "PCJ": [
     { "id": 1, "name": "Cappuccino", "price": 3.5 },
     { "id": 2, "name": "Iced Latte", "price": 4.0 },
-    { "id": 3, "name": "Cold Coffee", "price": 3.0 },
+    { "id": 3, "name": "Cold Brew", "price": 3.25 },
     { "id": 4, "name": "Espresso", "price": 2.5 },
-    { "id": 5, "name": "Muffin", "price": 2.0 },
-    { "id": 6, "name": "Sandwich", "price": 3.5 }
+    { "id": 5, "name": "Muffin", "price": 2.25 },
+    { "id": 6, "name": "Breakfast Sandwich", "price": 4.75 }
   ],
   "Jason's": [
     { "id": 1, "name": "Veggie Delight", "price": 5.0 },
     { "id": 2, "name": "Turkey Sandwich", "price": 6.0 }
+  ],
+  "Common Grounds Cafe Hunt Library": [
+    { "id": 1, "name": "Drip Coffee", "price": 2.25 },
+    { "id": 2, "name": "Latte", "price": 3.95 },
+    { "id": 3, "name": "Mocha", "price": 4.25 },
+    { "id": 4, "name": "Croissant", "price": 2.75 },
+    { "id": 5, "name": "Bagel & Cream Cheese", "price": 3.25 },
+    { "id": 6, "name": "Blueberry Muffin", "price": 2.5 }
+  ],
+  "Port City Java EBII": [
+    { "id": 1, "name": "Mocha Shake", "price": 4.95 },
+    { "id": 2, "name": "Caramel Latte", "price": 4.45 },
+    { "id": 3, "name": "Cold Brew", "price": 3.25 },
+    { "id": 4, "name": "Breakfast Sandwich", "price": 4.99 },
+    { "id": 5, "name": "Brownie", "price": 2.25 },
+    { "id": 6, "name": "Bagel", "price": 2.0 }
+  ],
+  "Hill of Beans Hill Library": [
+    { "id": 1, "name": "Single Scoop Ice Cream", "price": 3.5 },
+    { "id": 2, "name": "Double Scoop Ice Cream", "price": 4.75 },
+    { "id": 3, "name": "Hot Fudge Sundae", "price": 5.25 },
+    { "id": 4, "name": "Milkshake", "price": 4.5 },
+    { "id": 5, "name": "Fruit Smoothie", "price": 4.25 },
+    { "id": 6, "name": "Cookie", "price": 1.75 }
   ]
 }
