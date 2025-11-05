@@ -1,4 +1,5 @@
-import React, { useState, useContext, useEffect } from 'react';
+//import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import AuthForm from '../components/AuthForm';
@@ -20,7 +21,7 @@ const Login = () => {
         try {
             await login(credentials.username ?? credentials.email ?? credentials, credentials.password);
             navigate('/');
-        } catch (err) {
+        } catch {
             setError('Invalid username or password');
         }
     };

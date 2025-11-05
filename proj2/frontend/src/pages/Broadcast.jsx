@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useAuth } from "../hooks/useAuth";
+//import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import restaurantsData from "./restaurants.json";
 import { createRun } from "../services/runsService";
@@ -16,7 +16,7 @@ export default function Broadcast() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { user } = useAuth();
+//  const { user } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {

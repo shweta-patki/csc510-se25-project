@@ -4,7 +4,7 @@ import Menu from "../components/Menu";
 import { useAuth } from '../hooks/useAuth';
 import menuData from "../mock_data/menuData.json";
 import { listAvailableRuns, listJoinedRuns, joinRun, unjoinRun } from "../services/runsService";
-import { useToast } from "../context/ToastContext";
+import { useToast } from "../context/toastHelpers";
 
 export default function Home() {
   const { user } = useAuth();

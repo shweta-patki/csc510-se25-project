@@ -21,7 +21,7 @@ async function fetchWithAuth(path, options = {}) {
       const data = await res.json();
       const d = data?.detail ?? data?.error ?? detail;
       detail = typeof d === 'string' ? d : JSON.stringify(d);
-    } catch {}
+    } catch {;}
     throw new Error(`${detail} (${res.status})`);
   }
   if (res.status === 204) return null;

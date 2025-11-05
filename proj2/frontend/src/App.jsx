@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAuth } from './hooks/useAuth';
+//import { useAuth } from './hooks/useAuth';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
@@ -32,7 +32,7 @@ function Layout({ children }) {
 }
 
 function App() {
-  const { user } = useAuth();
+  //const { user } = useAuth();
 
   return (
     <AuthProvider>

@@ -15,7 +15,7 @@ async function fetchWithAuth(path, options = {}) {
     });
     if (!res.ok) {
         let detail = 'Request failed';
-        try { const data = await res.json(); detail = data.detail || data.error || detail; } catch {}
+        try { const data = await res.json(); detail = data.detail || data.error || detail; } catch {;}
         throw new Error(detail + ` (${res.status})`);
     }
     return res.json();
@@ -29,7 +29,7 @@ async function postJson(path, body) {
     });
     if (!res.ok) {
         let detail = 'Request failed';
-        try { const data = await res.json(); detail = data.detail || data.error || detail; } catch {}
+        try { const data = await res.json(); detail = data.detail || data.error || detail; } catch {;}
         throw new Error(detail + ` (${res.status})`);
     }
     return res.json();
