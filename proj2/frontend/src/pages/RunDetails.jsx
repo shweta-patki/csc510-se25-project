@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { getRunById, removeOrder, completeRun, cancelRun, verifyOrderPin } from "../services/runsService";
+import { useToast } from "../context/ToastContext";
 
 export default function RunDetails() {
   const { id } = useParams();
@@ -8,6 +9,10 @@ export default function RunDetails() {
   const [run, setRun] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { showToast } = useToast();
+  const [verifyingId, setVerifyingId] = useState(null);
+  const [pinValue, setPinValue] = useState("");
+  const [showPin, setShowPin] = useState(false);
 
   async function load() {
     setError("");
@@ -111,37 +116,64 @@ export default function RunDetails() {
             {Array.isArray(run.orders) && run.orders.length > 0 ? (
               <ul>
                 {run.orders.map((o) => (
-                  <li key={o.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-                    <span>
-                      <strong>{o.user_email}:</strong> {o.items} (${Number(o.amount).toFixed(2)})
-                      {o.status && (
-                        <span style={{ marginLeft: 8, fontStyle: 'italic' }}>status: {o.status}</span>
+                  <li key={o.id} style={{ display: 'flex', flexDirection: 'column', gap: 8, paddingBottom: 8, borderBottom: '1px solid #eee' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+                      <span>
+                        <strong>{o.user_email}:</strong> {o.items} (${Number(o.amount).toFixed(2)})
+                        {o.status && (
+                          <span style={{ marginLeft: 8, fontStyle: 'italic' }}>status: {o.status}</span>
+                        )}
+                      </span>
+                      {run.status === 'active' && (
+                        <span style={{ display: 'flex', gap: 8 }}>
+                          {o.status !== 'delivered' && (
+                            <button
+                              className="btn btn-secondary"
+                              onClick={() => { setVerifyingId(o.id); setPinValue(""); setShowPin(false); }}
+                              disabled={loading}
+                            >Verify PIN</button>
+                          )}
+                          <button className="btn btn-secondary" onClick={() => handleRemove(o.id)} disabled={loading}>Remove</button>
+                        </span>
                       )}
-                    </span>
-                    {run.status === 'active' && (
-                      <span style={{ display: 'flex', gap: 8 }}>
-                        {o.status !== 'delivered' && (
+                    </div>
+                    {verifyingId === o.id && (
+                      <div className="card" style={{ padding: '12px', marginTop: 4 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <input
+                            type={showPin ? 'text' : 'password'}
+                            placeholder="Enter 4-digit PIN"
+                            value={pinValue}
+                            onChange={(e) => setPinValue(e.target.value)}
+                            style={{ flex: 1 }}
+                          />
                           <button
                             className="btn btn-secondary"
+                            onClick={() => setShowPin((v) => !v)}
+                            title={showPin ? 'Hide PIN' : 'Show PIN'}
+                          >{showPin ? '🙈' : '👁️'}</button>
+                          <button
+                            className="btn btn-primary"
                             onClick={async () => {
-                              const pin = window.prompt('Enter 4-digit PIN shown by the user:');
-                              if (!pin) return;
+                              if (!pinValue) { showToast('Please enter a PIN', { type: 'warning' }); return; }
                               setLoading(true);
-                              setError("");
                               try {
-                                await verifyOrderPin(run.id, o.id, pin);
+                                await verifyOrderPin(run.id, o.id, pinValue);
+                                showToast('PIN verified. Marked delivered.', { type: 'success' });
+                                setVerifyingId(null);
+                                setPinValue("");
                                 await load();
                               } catch (e) {
-                                setError(e.message || 'Failed to verify PIN');
+                                const msg = (e.message || 'Failed to verify PIN').replace(/\s*\(\d+\)$/, '');
+                                showToast(msg, { type: 'error' });
                               } finally {
                                 setLoading(false);
                               }
                             }}
-                            disabled={loading}
-                          >Verify PIN</button>
-                        )}
-                        <button className="btn btn-secondary" onClick={() => handleRemove(o.id)} disabled={loading}>Remove</button>
-                      </span>
+                          >Submit</button>
+                          <button className="btn btn-secondary" onClick={() => { setVerifyingId(null); setPinValue(""); }}>Cancel</button>
+                        </div>
+                      </div>
                     )}
                   </li>
                 ))}

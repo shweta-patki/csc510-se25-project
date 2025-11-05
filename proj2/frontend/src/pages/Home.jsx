@@ -15,6 +15,7 @@ export default function Home() {
   const [error, setError] = useState("");
   const [activeRun, setActiveRun] = useState(null);
   const [activeMenuItems, setActiveMenuItems] = useState([]);
+  const [pinVisible, setPinVisible] = useState({}); // map runId -> bool
   
 
   const DUMMY_MENU = [
@@ -126,6 +127,30 @@ export default function Home() {
                   <div className="run-card-body">
                     <p><strong>ETA:</strong> {run.eta}</p>
                     <p><strong>Seats left:</strong> {run.seats_remaining}</p>
+                    {run.my_order?.pin && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <strong>Your PIN:</strong>
+                        <code>{pinVisible[run.id] ? run.my_order.pin : '••••'}</code>
+                        <button
+                          className="btn btn-secondary"
+                          style={{ padding: '6px 10px' }}
+                          onClick={() => setPinVisible((v) => ({ ...v, [run.id]: !v[run.id] }))}
+                          title={pinVisible[run.id] ? 'Hide PIN' : 'Show PIN'}
+                        >{pinVisible[run.id] ? '🙈' : '👁️'}</button>
+                        <button
+                          className="btn btn-secondary"
+                          style={{ padding: '6px 10px' }}
+                          onClick={async () => {
+                            try {
+                              await navigator.clipboard.writeText(run.my_order.pin);
+                              showToast('PIN copied to clipboard', { type: 'success' });
+                            } catch {
+                              showToast('Copy failed. Please copy manually.', { type: 'warning' });
+                            }
+                          }}
+                        >Copy</button>
+                      </div>
+                    )}
                   </div>
                   <div className="run-card-footer">
                     <button className="btn btn-secondary" disabled>

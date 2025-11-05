@@ -17,7 +17,7 @@ from .db import (
 from .models import User, FoodRun, Order
 from .schemas import (
     AuthRequest, AuthResponse, UserOut,
-    FoodRunCreate, FoodRunResponse,
+    FoodRunCreate, FoodRunResponse, JoinedRunResponse,
     OrderCreate, OrderResponse, OrderJoinResponse,
     PointsResponse, PinVerifyRequest
 )
@@ -308,7 +308,7 @@ def get_run_details(
         "orders": order_payload,
     }
 
-@app.get("/runs/joined", response_model=List[FoodRunResponse])
+@app.get("/runs/joined", response_model=List[JoinedRunResponse])
 def list_joined_runs(
     claims=Depends(get_current_user_claims),
     session: Session = Depends(get_session)
@@ -331,8 +331,16 @@ def list_joined_runs(
         cap = r.capacity or 0
         seats_remaining = max(cap - len(count), 0)
         runner = session.get(User, r.runner_id)
+        # find my order for this run (expose pin to the owner of the order only)
+        mine = session.exec(
+            select(Order).where(
+                Order.run_id == r.id,
+                Order.user_id == user_id,
+                Order.status != "cancelled",
+            )
+        ).first()
         # Build explicit payload to avoid any None values breaking response validation
-        responses.append({
+        payload = {
             "id": r.id,
             "runner_id": r.runner_id,
             "restaurant": r.restaurant or "",
@@ -343,7 +351,17 @@ def list_joined_runs(
             "runner_username": runner.email if runner else str(r.runner_id),
             "seats_remaining": seats_remaining,
             "orders": []
-        })
+        }
+        if mine:
+            payload["my_order"] = {
+                "id": mine.id,
+                "run_id": mine.run_id,
+                "items": mine.items,
+                "amount": mine.amount,
+                "status": mine.status,
+                "pin": mine.pin or "",
+            }
+        responses.append(payload)
     return responses
 
 @app.get("/runs/mine/history", response_model=List[FoodRunResponse])
@@ -377,7 +395,7 @@ def list_my_runs_history(
         })
     return responses
 
-@app.get("/runs/joined/history", response_model=List[FoodRunResponse])
+@app.get("/runs/joined/history", response_model=List[JoinedRunResponse])
 def list_joined_runs_history(
     claims=Depends(get_current_user_claims),
     session: Session = Depends(get_session)
@@ -392,12 +410,29 @@ def list_joined_runs_history(
     responses = []
     for r in runs:
         runner = session.get(User, r.runner_id)
-        responses.append({
+        # include my_order for historical reference
+        mine = session.exec(
+            select(Order).where(
+                Order.run_id == r.id,
+                Order.user_id == user_id,
+            )
+        ).first()
+        payload = {
             **r.dict(),
             "runner_username": runner.email if runner else str(r.runner_id),
             "seats_remaining": 0,
             "orders": [],
-        })
+        }
+        if mine:
+            payload["my_order"] = {
+                "id": mine.id,
+                "run_id": mine.run_id,
+                "items": mine.items,
+                "amount": mine.amount,
+                "status": mine.status,
+                "pin": (mine.pin or ""),
+            }
+        responses.append(payload)
     return responses
 
 @app.delete("/runs/{run_id}/orders/{order_id}")

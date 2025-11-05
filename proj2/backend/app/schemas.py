@@ -37,6 +37,14 @@ class OrderJoinResponse(BaseModel):
     user_email: str
     pin: str
 
+class MyOrderResponse(BaseModel):
+    id: int
+    run_id: int
+    items: str
+    amount: float
+    status: str
+    pin: str
+
 class FoodRunCreate(BaseModel):
     restaurant: str
     drop_point: str
@@ -50,6 +58,9 @@ class FoodRunResponse(FoodRunCreate):
     status: str
     seats_remaining: int
     orders: List[OrderResponse] = []
+
+class JoinedRunResponse(FoodRunResponse):
+    my_order: Optional[MyOrderResponse] = None
 
 class PointsResponse(BaseModel):
     points: int
