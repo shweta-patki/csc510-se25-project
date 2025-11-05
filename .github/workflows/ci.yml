@@ -52,6 +52,9 @@ jobs:
           pip install pytest
 
       - name: Run backend tests
+        env:
+          DATABASE_URL: sqlite:///./test.db
         run: |
           echo "Running pytest in proj2/backend/tests"
+          rm -f test.db || true
           pytest tests/ -v --maxfail=3 --disable-warnings
