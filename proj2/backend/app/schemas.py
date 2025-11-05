@@ -23,16 +23,20 @@ class OrderResponse(OrderCreate):
     run_id: int
     user_id: int
     status: str
+    user_email: str
 
 class FoodRunCreate(BaseModel):
     restaurant: str
     drop_point: str
     eta: str
+    capacity: int = 5
 
 class FoodRunResponse(FoodRunCreate):
     id: int
     runner_id: int
+    runner_username: str
     status: str
+    seats_remaining: int
     orders: List[OrderResponse] = []
 
 class PointsResponse(BaseModel):

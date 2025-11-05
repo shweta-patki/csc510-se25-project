@@ -19,6 +19,7 @@ class FoodRun(SQLModel, table=True):
     restaurant: str
     drop_point: str
     eta: str
+    capacity: int = Field(default=5)  # maximum number of joiners/orders
     status: str = Field(default="active")  # active, completed, cancelled
     created_at: Optional[str] = Field(
         default=None,
