@@ -18,6 +18,7 @@ dist-ssr
 .env.production.local
 .npm
 coverage/
+package-lock.json
 
 # Python Backend
 *.py[cod]
