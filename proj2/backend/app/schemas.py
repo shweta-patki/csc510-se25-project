@@ -17,6 +17,7 @@ class AuthResponse(BaseModel):
 class OrderCreate(BaseModel):
     items: str
     amount: float
+    pin: Optional[str] = None  # optional client-provided PIN; server will generate if missing
 
 class OrderResponse(OrderCreate):
     id: int
@@ -24,6 +25,17 @@ class OrderResponse(OrderCreate):
     user_id: int
     status: str
     user_email: str
+
+class OrderJoinResponse(BaseModel):
+    # Response for joining a run; includes the generated PIN for the joiner
+    id: int
+    run_id: int
+    user_id: int
+    status: str
+    items: str
+    amount: float
+    user_email: str
+    pin: str
 
 class FoodRunCreate(BaseModel):
     restaurant: str
@@ -42,3 +54,6 @@ class FoodRunResponse(FoodRunCreate):
 class PointsResponse(BaseModel):
     points: int
     points_value: float  # in dollars
+
+class PinVerifyRequest(BaseModel):
+    pin: str

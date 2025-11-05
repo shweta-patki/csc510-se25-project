@@ -12,13 +12,14 @@ from .db import (
     get_session,
     ensure_user_points_column,
     ensure_foodrun_capacity_column,
+    ensure_order_pin_column,
 )
 from .models import User, FoodRun, Order
 from .schemas import (
     AuthRequest, AuthResponse, UserOut,
     FoodRunCreate, FoodRunResponse,
-    OrderCreate, OrderResponse,
-    PointsResponse
+    OrderCreate, OrderResponse, OrderJoinResponse,
+    PointsResponse, PinVerifyRequest
 )
 from .auth import (
     get_password_hash,
@@ -37,6 +38,7 @@ async def lifespan(app: FastAPI):
     # Ensure SQLite dev DBs have newly added columns (e.g., 'points')
     ensure_user_points_column()
     ensure_foodrun_capacity_column()
+    ensure_order_pin_column()
     yield
 
 
@@ -133,7 +135,7 @@ def list_runs(
         })
     return responses
 
-@app.post("/runs/{run_id}/orders", response_model=OrderResponse)
+@app.post("/runs/{run_id}/orders", response_model=OrderJoinResponse)
 def create_order(
     run_id: int,
     order: OrderCreate,
@@ -156,7 +158,9 @@ def create_order(
     if len(current_count) >= food_run.capacity:
         raise HTTPException(status_code=400, detail="Run is full")
     
-    order_row = Order(**order.dict(), run_id=run_id, user_id=user_id)
+    # ensure a 4-digit PIN
+    pin = order.pin if order.pin else f"{int(os.urandom(2).hex(), 16) % 9000 + 1000:04d}"
+    order_row = Order(**{**order.dict(), "pin": pin}, run_id=run_id, user_id=user_id)
     session.add(order_row)
     session.commit()
     session.refresh(order_row)
@@ -169,7 +173,35 @@ def create_order(
         "items": order_row.items,
         "amount": order_row.amount,
         "user_email": u.email if u else str(user_id),
+        "pin": pin,
     }
+
+@app.post("/runs/{run_id}/orders/{order_id}/verify-pin")
+def verify_order_pin(
+    run_id: int,
+    order_id: int,
+    payload: PinVerifyRequest,
+    claims=Depends(get_current_user_claims),
+    session: Session = Depends(get_session),
+):
+    user_id = int(claims["sub"])
+    run = session.get(FoodRun, run_id)
+    if not run:
+        raise HTTPException(status_code=404, detail="Run not found")
+    if run.runner_id != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    order = session.get(Order, order_id)
+    if not order or order.run_id != run_id:
+        raise HTTPException(status_code=404, detail="Order not found")
+    if order.status == "cancelled":
+        raise HTTPException(status_code=400, detail="Order cancelled")
+    if not order.pin:
+        raise HTTPException(status_code=400, detail="No PIN set for this order")
+    if str(order.pin) != str(payload.pin):
+        raise HTTPException(status_code=400, detail="Incorrect PIN")
+    order.status = "delivered"
+    session.commit()
+    return {"message": "PIN verified. Order marked delivered."}
 
 @app.delete("/runs/{run_id}/orders/me")
 def cancel_my_order(

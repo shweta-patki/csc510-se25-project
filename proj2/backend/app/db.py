@@ -42,6 +42,18 @@ def ensure_foodrun_capacity_column() -> None:
         # Same best-effort approach
         pass
 
+def ensure_order_pin_column() -> None:
+    try:
+        if not DATABASE_URL.startswith("sqlite"):
+            return
+        with engine.begin() as conn:
+            cols = [row[1] for row in conn.execute(text("PRAGMA table_info('order')"))]
+            if "pin" not in cols:
+                conn.execute(text("ALTER TABLE 'order' ADD COLUMN pin TEXT"))
+    except Exception:
+        # Best-effort; ignore failures in dev
+        pass
+
 # Dependency for FastAPI routes
 
 def get_session():
