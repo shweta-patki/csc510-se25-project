@@ -473,7 +473,7 @@ def complete_run(
     # Calculate total bill and points
     orders = session.exec(select(Order).where(Order.run_id == run_id)).all()
     total_amount = sum(order.amount for order in orders)
-    earned_points = int(total_amount / 10)  # 1 point per $10
+    earned_points = total_amount / 10  # 1 point per $10
     
     # Update run status
     food_run.status = "completed"
