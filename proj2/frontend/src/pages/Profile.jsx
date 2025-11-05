@@ -50,9 +50,12 @@ export default function Profile() {
     <div className="profile-link-card">
       <div className="flex justify-between items-center">
         <h2>Your Food Runs</h2>
-        <Link to="/your-runs">View Your Runs</Link>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <Link to="/your-runs">Manage</Link>
+          <Link to="/history">History</Link>
+        </div>
       </div>
-      <p>View and manage all your food runs in the Your Runs section.</p>
+      <p>Manage your broadcasts and see your run history.</p>
     </div>
   </div>
 

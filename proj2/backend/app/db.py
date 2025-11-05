@@ -29,6 +29,31 @@ def ensure_user_points_column() -> None:
         # Users can still delete dev.db manually. Intentionally swallow to avoid crash.
         pass
 
+def ensure_foodrun_capacity_column() -> None:
+    try:
+        if not DATABASE_URL.startswith("sqlite"):
+            return
+        with engine.begin() as conn:
+            cols = [row[1] for row in conn.execute(text("PRAGMA table_info('foodrun')"))]
+            if "capacity" not in cols:
+                conn.execute(text("ALTER TABLE foodrun ADD COLUMN capacity INTEGER DEFAULT 5"))
+                conn.execute(text("UPDATE foodrun SET capacity = 5 WHERE capacity IS NULL"))
+    except Exception:
+        # Same best-effort approach
+        pass
+
+def ensure_order_pin_column() -> None:
+    try:
+        if not DATABASE_URL.startswith("sqlite"):
+            return
+        with engine.begin() as conn:
+            cols = [row[1] for row in conn.execute(text("PRAGMA table_info('order')"))]
+            if "pin" not in cols:
+                conn.execute(text("ALTER TABLE 'order' ADD COLUMN pin TEXT"))
+    except Exception:
+        # Best-effort; ignore failures in dev
+        pass
+
 # Dependency for FastAPI routes
 
 def get_session():

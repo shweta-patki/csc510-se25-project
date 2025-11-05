@@ -19,6 +19,7 @@ class FoodRun(SQLModel, table=True):
     restaurant: str
     drop_point: str
     eta: str
+    capacity: int = Field(default=5)  # maximum number of joiners/orders
     status: str = Field(default="active")  # active, completed, cancelled
     created_at: Optional[str] = Field(
         default=None,
@@ -32,6 +33,7 @@ class Order(SQLModel, table=True):
     items: str  # JSON string of ordered items
     amount: float
     status: str = Field(default="pending")  # pending, paid, delivered
+    pin: Optional[str] = None  # 4-digit PIN for order pickup verification
     created_at: Optional[str] = Field(
         default=None,
         sa_column=Column(DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP")),

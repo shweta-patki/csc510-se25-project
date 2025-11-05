@@ -1,89 +1,111 @@
-import React, {useState} from 'react';
-import { useNavigate} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import RunCard from "../components/RunCard";
 import Menu from "../components/Menu";
 import { useAuth } from '../hooks/useAuth';
 import menuData from "../mock_data/menuData.json";
+import { listAvailableRuns, listJoinedRuns, joinRun, unjoinRun } from "../services/runsService";
+import { useToast } from "../context/ToastContext";
 
-
-export default function Home({ runs, setRuns }) {
-  /* Home page component
-    Displays a list of active runs and user information
-  */
+export default function Home() {
+  const { user } = useAuth();
+  const { showToast } = useToast();
+  const [available, setAvailable] = useState([]);
+  const [joined, setJoined] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [activeRun, setActiveRun] = useState(null);
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  const [activeMenuItems, setActiveMenuItems] = useState([]);
+  const [pinVisible, setPinVisible] = useState({}); // map runId -> bool
+  
 
-  const handleJoinClick = (run) => {
-    if (run.runner === user.username) {
-      alert("You cannot join your own run."); //Prevent joining your own run
+  const DUMMY_MENU = [
+    { id: 1, name: 'Classic Combo', price: 9.99 },
+    { id: 2, name: 'Veggie Special', price: 8.49 },
+    { id: 3, name: 'Chicken Wrap', price: 7.99 },
+    { id: 4, name: 'Iced Coffee', price: 3.49 },
+  ];
+
+  function getMenuForRestaurant(name) {
+    const direct = menuData?.[name];
+    if (Array.isArray(direct) && direct.length > 0) return direct;
+    const n = (name || '').toLowerCase();
+    if (n.includes('common grounds')) return menuData['Common Grounds Cafe Hunt Library'] || DUMMY_MENU;
+    if (n.includes('port city') || n.includes('pcj')) return menuData['Port City Java EBII'] || menuData['PCJ'] || DUMMY_MENU;
+    if (n.includes('hill of beans')) return menuData['Hill of Beans Hill Library'] || DUMMY_MENU;
+    if (n.includes('jason')) return menuData["Jason's"] || DUMMY_MENU;
+    return DUMMY_MENU;
+  }
+  
+
+  async function refresh() {
+    setError("");
+    try {
+      const [a, j] = await Promise.all([listAvailableRuns(), listJoinedRuns()]);
+      setAvailable(a);
+      setJoined(j);
+    } catch (e) {
+      setError(e.message || "Failed to load runs");
+    }
+  }
+
+  useEffect(() => {
+    if (user) refresh();
+  }, [user]);
+
+  function handleJoinClick(run) {
+    if (run.runner_username === user.username) {
+      showToast("You cannot join your own run.", { type: 'warning' });
       return;
     }
+    const items = getMenuForRestaurant(run.restaurant);
+    setActiveMenuItems(items);
+    setActiveRun(run);
+  }
 
-    if (menuData[run.restaurant]) { //TODO: Change to API Calls when backend is ready
-      setActiveRun(run); // Show popup for menu selection
-    } else {
-      // No menu popup for this restaurant — generate a PIN and show it to the joining user
-      const generatedPin = String(Math.floor(1000 + Math.random() * 9000));
-      alert(`Joining run to ${run.restaurant}. Your 4-digit PIN is ${generatedPin}. Give this to the runner when they arrive.`);
-      handleConfirmOrder([], run, generatedPin);
+  async function handleConfirmOrder(cart = []) {
+    if (!activeRun) return;
+    // cart: [{id, name, price, qty}]
+    const amount = cart.reduce((sum, i) => sum + (Number(i.price) || 0) * (Number(i.qty) || 0), 0);
+    const items = cart
+      .filter(i => (Number(i.qty) || 0) > 0)
+      .map(i => `${i.qty}x ${i.name}`)
+      .join(", ");
+    setLoading(true);
+    setError("");
+    try {
+      const resp = await joinRun(activeRun.id, { items, amount });
+      if (resp?.pin) {
+        showToast(`Your pickup PIN is ${resp.pin}`, { type: 'info', duration: 7000 });
+      }
+      await refresh();
+    } catch (e) {
+      setError(e.message || "Failed to join run");
+    } finally {
+      setLoading(false);
+      setActiveRun(null);
     }
-  };
+  }
 
-  const handleConfirmOrder = (selectedItems = [], run = activeRun, pin = null) => {
-  if (!run) return;
-
-  const updatedRuns = runs
-    .map((r) =>
-      r.id === run.id
-        ? {
-            ...r,
-            seats: r.seats - 1,
-            orders: [
-              ...(r.orders || []),
-              { user: user.username, items: selectedItems, pin: pin, delivered: false },
-            ],
-          }
-        : r
-    )
-    .filter((r) => r.seats > 0); // remove runs with no seats left
-
-  setRuns(updatedRuns);
-  localStorage.setItem("runs", JSON.stringify(updatedRuns)); //TODO: Change to API Calls when backend is ready
-
-  setActiveRun(null);
-};
-
-const joinedRuns = runs.filter((r) =>
-    r.orders?.some(order => order.user === user.username)
-  );
-
-const availableRuns = runs.filter(
-    (r) =>
-      r.runner !== user.username &&
-      !(r.orders?.some(order => order.user === user.username)) &&
-      r.seats > 0
-  );
-
-
-return (
+  return (
     <div className="home-container">
       <div className="home-header">
         <h1>Active Runs</h1>
+        <button className="btn btn-secondary" onClick={refresh} disabled={loading}>Refresh</button>
       </div>
+
+      {error && (<div style={{ color: 'red', marginBottom: 12 }}>{error}</div>)}
 
       <div className="runs-columns">
         <div className="runs-section">
           <h3>Available Runs</h3>
           <div className="runs-list scrollable">
-            {availableRuns.length > 0 ? (
-              availableRuns.map((run) => (
+            {available.length > 0 ? (
+              available.map((run) => (
                 <RunCard
                   key={run.id}
                   run={run}
                   onJoin={handleJoinClick}
-                  currentUser={user}
-                  joinedRuns={joinedRuns}
+                  joinedRuns={joined}
                 />
               ))
             ) : (
@@ -95,15 +117,58 @@ return (
         <div className="runs-section">
           <h3>Joined Runs</h3>
           <div className="runs-list scrollable">
-            {joinedRuns.length > 0 ? (
-              joinedRuns.map((run) => (
-                <RunCard
-                  key={run.id}
-                  run={run}
-                  onJoin={handleJoinClick}
-                  currentUser={user}
-                  joinedRuns={joinedRuns}
-                />
+            {joined.length > 0 ? (
+              joined.map((run) => (
+                <div key={run.id} className="run-card">
+                  <div className="run-card-header">
+                    <h3>{run.restaurant}</h3>
+                    <span className="run-card-runner">by {run.runner_username}</span>
+                  </div>
+                  <div className="run-card-body">
+                    <p><strong>ETA:</strong> {run.eta}</p>
+                    <p><strong>Seats left:</strong> {run.seats_remaining}</p>
+                    {run.my_order?.pin && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <strong>Your PIN:</strong>
+                        <code>{pinVisible[run.id] ? run.my_order.pin : '••••'}</code>
+                        <button
+                          className="btn btn-secondary"
+                          style={{ padding: '6px 10px' }}
+                          onClick={() => setPinVisible((v) => ({ ...v, [run.id]: !v[run.id] }))}
+                          title={pinVisible[run.id] ? 'Hide PIN' : 'Show PIN'}
+                        >{pinVisible[run.id] ? '🙈' : '👁️'}</button>
+                        <button
+                          className="btn btn-secondary"
+                          style={{ padding: '6px 10px' }}
+                          onClick={async () => {
+                            try {
+                              await navigator.clipboard.writeText(run.my_order.pin);
+                              showToast('PIN copied to clipboard', { type: 'success' });
+                            } catch {
+                              showToast('Copy failed. Please copy manually.', { type: 'warning' });
+                            }
+                          }}
+                        >Copy</button>
+                      </div>
+                    )}
+                  </div>
+                  <div className="run-card-footer">
+                    <button className="btn btn-secondary" disabled>
+                      Joined
+                    </button>
+                    <button
+                      className="btn btn-secondary"
+                      style={{ marginLeft: 8 }}
+                      onClick={async () => {
+                        setLoading(true);
+                        setError("");
+                        try { await unjoinRun(run.id); await refresh(); } catch (e) { setError(e.message || "Failed to unjoin"); } finally { setLoading(false); }
+                      }}
+                    >
+                      Unjoin
+                    </button>
+                  </div>
+                </div>
               ))
             ) : (
               <p>You haven’t joined any runs yet.</p>
@@ -115,9 +180,9 @@ return (
       {activeRun && (
         <Menu
           restaurant={activeRun.restaurant}
-          menuItems={menuData[activeRun.restaurant] || []}
+          menuItems={activeMenuItems || []}
           onClose={() => setActiveRun(null)}
-          onConfirm={(selectedItems, pin) => handleConfirmOrder(selectedItems, activeRun, pin)}
+          onConfirm={handleConfirmOrder}
         />
       )}
     </div>
