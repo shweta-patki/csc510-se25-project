@@ -86,6 +86,11 @@ Restart Vite if you change .env.
 ---
 
 ## 🧪 Testing (coming soon)
+Initial Installation:
+```bash
+npm install --save-dev vitest jsdom @testing-library/react @testing-library/jest-dom
+```
+
 Once testing is set up:
 ```bash
 npm run test

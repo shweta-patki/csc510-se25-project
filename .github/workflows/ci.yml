@@ -1,0 +1,60 @@
+name: Run proj2 Tests on Merge to Main
+
+on:
+  push:
+    branches: 
+      - main
+      - test/github-actions
+    paths:
+      - 'proj2/**'
+
+jobs:
+  frontend-tests:
+    name: Frontend (Vitest)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: proj2/frontend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run frontend tests
+        run: npx vitest run
+
+  backend-tests:
+    name: Backend (Pytest)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: proj2/backend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+
+      - name: Run backend tests
+        env:
+          DATABASE_URL: sqlite:///./test.db
+        run: |
+          echo "Running pytest in proj2/backend/tests"
+          rm -f test.db || true
+          pytest tests/ -v --maxfail=3 --disable-warnings

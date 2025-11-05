@@ -13,6 +13,7 @@ import YourRuns from './pages/YourRuns';
 import Profile from './pages/Profile';
 import History from './pages/History';
 import RunDetails from './pages/RunDetails';
+import PinEntry from './pages/PinEntry';
 
 //Components
 import Navbar from './components/Navbar';
@@ -53,6 +54,12 @@ function App() {
           <Route path="/your-runs/:id" element={
             <PrivateRoute>
               <RunDetails />
+            </PrivateRoute>
+          } />
+
+          <Route path="/pin/:runId/:orderIndex" element={
+            <PrivateRoute>
+              <PinEntry runs={runs} setRuns={setRuns} />
             </PrivateRoute>
           } />
 

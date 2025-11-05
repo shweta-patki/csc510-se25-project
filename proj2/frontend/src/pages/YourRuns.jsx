@@ -8,6 +8,7 @@ export default function YourRuns() {
   const [myRuns, setMyRuns] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   async function refresh() {
     setError("");
@@ -18,6 +19,7 @@ export default function YourRuns() {
       setError(e.message || "Failed to load runs");
     }
   }
+
 
   useEffect(() => {
     if (user) refresh();
@@ -91,6 +93,41 @@ export default function YourRuns() {
                   </div>
                   {/* Orders and actions moved to details page */}
                 </div>
+
+//       {yourRuns.length === 0 ? (
+//         <p>You haven’t broadcasted any runs yet.</p>
+//       ) : (
+//         <div className="runs-list">
+//           {yourRuns.map((run) => (
+//             <div key={run.id} className="run-card">
+//               <div className="run-card-header">
+//                 <h3>{run.restaurant}</h3>
+//                 <span className="run-card-runner">ETA: {run.eta}</span>
+//               </div>
+//               <div className="run-card-body">
+//                 <p><strong>Seats Left:</strong> {run.seats}</p>
+//                 <p><strong>Orders Taken:</strong> {run.orders?.length || 0}</p>
+//                 {run.orders?.length > 0 && (
+//                   <ul>
+//                     {run.orders.map((o, i) => (
+//                       <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+//                         <div>
+//                           {o.user}: {o.items.join(", ")}
+//                           {o.delivered ? (
+//                             <span style={{ marginLeft: 8, color: 'green' }}>(Delivered)</span>
+//                           ) : null}
+//                         </div>
+//                         {!o.delivered && (
+//                           <div>
+//                             <button className="btn btn-primary" onClick={() => navigate(`/pin/${run.id}/${i}`)}>
+//                               Enter PIN
+//                             </button>
+//                           </div>
+//                         )}
+//                       </li>
+//                     ))}
+//                   </ul>
+//                 )}
               </div>
             ))}
           </div>

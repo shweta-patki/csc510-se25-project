@@ -6,13 +6,14 @@ import menuData from "../mock_data/menuData.json";
 import { listAvailableRuns, listJoinedRuns, joinRun, unjoinRun } from "../services/runsService";
 
 export default function Home() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [available, setAvailable] = useState([]);
   const [joined, setJoined] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [activeRun, setActiveRun] = useState(null);
   const [activeMenuItems, setActiveMenuItems] = useState([]);
+  const navigate = useNavigate();
 
   const DUMMY_MENU = [
     { id: 1, name: 'Classic Combo', price: 9.99 },
@@ -31,6 +32,41 @@ export default function Home() {
     if (n.includes('jason')) return menuData["Jason's"] || DUMMY_MENU;
     return DUMMY_MENU;
   }
+// pin system start
+  const handleJoinClick = (run) => {
+    if (run.runner === user.username) {
+      alert("You cannot join your own run."); //Prevent joining your own run
+      return;
+    }
+
+    if (menuData[run.restaurant]) { //TODO: Change to API Calls when backend is ready
+      setActiveRun(run); // Show popup for menu selection
+    } else {
+      // No menu popup for this restaurant — generate a PIN and show it to the joining user
+      const generatedPin = String(Math.floor(1000 + Math.random() * 9000));
+      alert(`Joining run to ${run.restaurant}. Your 4-digit PIN is ${generatedPin}. Give this to the runner when they arrive.`);
+      handleConfirmOrder([], run, generatedPin);
+    }
+  };
+
+  const handleConfirmOrder = (selectedItems = [], run = activeRun, pin = null) => {
+  if (!run) return;
+
+  const updatedRuns = runs
+    .map((r) =>
+      r.id === run.id
+        ? {
+            ...r,
+            seats: r.seats - 1,
+            orders: [
+              ...(r.orders || []),
+              { user: user.username, items: selectedItems, pin: pin, delivered: false },
+            ],
+          }
+        : r
+    )
+    .filter((r) => r.seats > 0); // remove runs with no seats left
+// pin system end
 
   async function refresh() {
     setError("");
@@ -150,7 +186,7 @@ export default function Home() {
           restaurant={activeRun.restaurant}
           menuItems={activeMenuItems || []}
           onClose={() => setActiveRun(null)}
-          onConfirm={handleConfirmOrder}
+          onConfirm={(selectedItems, pin) => handleConfirmOrder(selectedItems, activeRun, pin)}
         />
       )}
     </div>
