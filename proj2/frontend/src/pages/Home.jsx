@@ -1,87 +1,103 @@
-import React, {useState} from 'react';
-import { useNavigate} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import RunCard from "../components/RunCard";
 import Menu from "../components/Menu";
 import { useAuth } from '../hooks/useAuth';
 import menuData from "../mock_data/menuData.json";
+import { listAvailableRuns, listJoinedRuns, joinRun, unjoinRun } from "../services/runsService";
 
-
-export default function Home({ runs, setRuns }) {
-  /* Home page component
-    Displays a list of active runs and user information
-  */
+export default function Home() {
+  const { user } = useAuth();
+  const [available, setAvailable] = useState([]);
+  const [joined, setJoined] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [activeRun, setActiveRun] = useState(null);
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  const [activeMenuItems, setActiveMenuItems] = useState([]);
 
-  const handleJoinClick = (run) => {
-    if (run.runner === user.username) {
-      alert("You cannot join your own run."); //Prevent joining your own run
+  const DUMMY_MENU = [
+    { id: 1, name: 'Classic Combo', price: 9.99 },
+    { id: 2, name: 'Veggie Special', price: 8.49 },
+    { id: 3, name: 'Chicken Wrap', price: 7.99 },
+    { id: 4, name: 'Iced Coffee', price: 3.49 },
+  ];
+
+  function getMenuForRestaurant(name) {
+    const direct = menuData?.[name];
+    if (Array.isArray(direct) && direct.length > 0) return direct;
+    const n = (name || '').toLowerCase();
+    if (n.includes('common grounds')) return menuData['Common Grounds Cafe Hunt Library'] || DUMMY_MENU;
+    if (n.includes('port city') || n.includes('pcj')) return menuData['Port City Java EBII'] || menuData['PCJ'] || DUMMY_MENU;
+    if (n.includes('hill of beans')) return menuData['Hill of Beans Hill Library'] || DUMMY_MENU;
+    if (n.includes('jason')) return menuData["Jason's"] || DUMMY_MENU;
+    return DUMMY_MENU;
+  }
+
+  async function refresh() {
+    setError("");
+    try {
+      const [a, j] = await Promise.all([listAvailableRuns(), listJoinedRuns()]);
+      setAvailable(a);
+      setJoined(j);
+    } catch (e) {
+      setError(e.message || "Failed to load runs");
+    }
+  }
+
+  useEffect(() => {
+    if (user) refresh();
+  }, [user]);
+
+  function handleJoinClick(run) {
+    if (run.runner_username === user.username) {
+      alert("You cannot join your own run.");
       return;
     }
+    const items = getMenuForRestaurant(run.restaurant);
+    setActiveMenuItems(items);
+    setActiveRun(run);
+  }
 
-    if (menuData[run.restaurant]) { //TODO: Change to API Calls when backend is ready
-      setActiveRun(run); // Show popup for menu selection
-    } else {
-      alert(`Joining run to ${run.restaurant}`);
-      handleConfirmOrder([], run);
+  async function handleConfirmOrder(cart = []) {
+    if (!activeRun) return;
+    // cart: [{id, name, price, qty}]
+    const amount = cart.reduce((sum, i) => sum + (Number(i.price) || 0) * (Number(i.qty) || 0), 0);
+    const items = cart
+      .filter(i => (Number(i.qty) || 0) > 0)
+      .map(i => `${i.qty}x ${i.name}`)
+      .join(", ");
+    setLoading(true);
+    setError("");
+    try {
+      await joinRun(activeRun.id, { items, amount });
+      await refresh();
+    } catch (e) {
+      setError(e.message || "Failed to join run");
+    } finally {
+      setLoading(false);
+      setActiveRun(null);
     }
-  };
+  }
 
-  const handleConfirmOrder = (selectedItems = [], run = activeRun) => {
-  if (!run) return;
-
-  const updatedRuns = runs
-    .map((r) =>
-      r.id === run.id
-        ? {
-            ...r,
-            seats: r.seats - 1,
-            orders: [
-              ...(r.orders || []),
-              { user: user.username, items: selectedItems },
-            ],
-          }
-        : r
-    )
-    .filter((r) => r.seats > 0); // remove runs with no seats left
-
-  setRuns(updatedRuns);
-  localStorage.setItem("runs", JSON.stringify(updatedRuns)); //TODO: Change to API Calls when backend is ready
-
-  setActiveRun(null);
-};
-
-const joinedRuns = runs.filter((r) =>
-    r.orders?.some(order => order.user === user.username)
-  );
-
-const availableRuns = runs.filter(
-    (r) =>
-      r.runner !== user.username &&
-      !(r.orders?.some(order => order.user === user.username)) &&
-      r.seats > 0
-  );
-
-
-return (
+  return (
     <div className="home-container">
       <div className="home-header">
         <h1>Active Runs</h1>
+        <button className="btn btn-secondary" onClick={refresh} disabled={loading}>Refresh</button>
       </div>
+
+      {error && (<div style={{ color: 'red', marginBottom: 12 }}>{error}</div>)}
 
       <div className="runs-columns">
         <div className="runs-section">
           <h3>Available Runs</h3>
           <div className="runs-list scrollable">
-            {availableRuns.length > 0 ? (
-              availableRuns.map((run) => (
+            {available.length > 0 ? (
+              available.map((run) => (
                 <RunCard
                   key={run.id}
                   run={run}
                   onJoin={handleJoinClick}
-                  currentUser={user}
-                  joinedRuns={joinedRuns}
+                  joinedRuns={joined}
                 />
               ))
             ) : (
@@ -93,15 +109,34 @@ return (
         <div className="runs-section">
           <h3>Joined Runs</h3>
           <div className="runs-list scrollable">
-            {joinedRuns.length > 0 ? (
-              joinedRuns.map((run) => (
-                <RunCard
-                  key={run.id}
-                  run={run}
-                  onJoin={handleJoinClick}
-                  currentUser={user}
-                  joinedRuns={joinedRuns}
-                />
+            {joined.length > 0 ? (
+              joined.map((run) => (
+                <div key={run.id} className="run-card">
+                  <div className="run-card-header">
+                    <h3>{run.restaurant}</h3>
+                    <span className="run-card-runner">by {run.runner_username}</span>
+                  </div>
+                  <div className="run-card-body">
+                    <p><strong>ETA:</strong> {run.eta}</p>
+                    <p><strong>Seats left:</strong> {run.seats_remaining}</p>
+                  </div>
+                  <div className="run-card-footer">
+                    <button className="btn btn-secondary" disabled>
+                      Joined
+                    </button>
+                    <button
+                      className="btn btn-secondary"
+                      style={{ marginLeft: 8 }}
+                      onClick={async () => {
+                        setLoading(true);
+                        setError("");
+                        try { await unjoinRun(run.id); await refresh(); } catch (e) { setError(e.message || "Failed to unjoin"); } finally { setLoading(false); }
+                      }}
+                    >
+                      Unjoin
+                    </button>
+                  </div>
+                </div>
               ))
             ) : (
               <p>You haven’t joined any runs yet.</p>
@@ -113,7 +148,7 @@ return (
       {activeRun && (
         <Menu
           restaurant={activeRun.restaurant}
-          menuItems={menuData[activeRun.restaurant] || []}
+          menuItems={activeMenuItems || []}
           onClose={() => setActiveRun(null)}
           onConfirm={handleConfirmOrder}
         />

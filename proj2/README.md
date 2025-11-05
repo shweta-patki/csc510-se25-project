@@ -152,10 +152,31 @@ uvicorn app.main:app --port 5050
 API available at http://localhost:5050 (docs at /docs)
 
 ### Endpoints
-- POST /auth/register { email, password } -> { user, token }
-- POST /auth/login { email, password } -> { user, token }
-- GET  /auth/me (Authorization: Bearer <token>) -> { id, username }
-- GET  /runs (Authorization: Bearer <token>) -> { runs: [...] }
+- Auth
+	- POST /auth/register { email, password } -> { user: { id, username, points }, token }
+	- POST /auth/login { email, password } -> { user: { id, username, points }, token }
+	- GET  /auth/me (Bearer) -> { id, username, points }
+
+- Runs (Bearer)
+	- POST /runs { restaurant, drop_point, eta, capacity? } -> FoodRunResponse
+	- GET  /runs -> [FoodRunResponse]
+	- GET  /runs/available -> other users’ active runs with seats_remaining > 0
+	- GET  /runs/joined -> runs you have joined
+	- GET  /runs/mine -> runs created by you
+	- GET  /runs/joined/history -> joined runs that are completed/cancelled
+	- GET  /runs/mine/history -> your runs that are completed/cancelled
+	- POST /runs/{run_id}/orders { items, amount } -> OrderResponse (join a run)
+	- DELETE /runs/{run_id}/orders/me -> cancel your order (unjoin)
+	- DELETE /runs/{run_id}/orders/{order_id} -> runner removes a user's order
+	- PUT /runs/{run_id}/complete -> mark run completed and award points
+	- PUT /runs/{run_id}/cancel -> cancel your run
+
+	FoodRunResponse includes: id, runner_id, runner_username, restaurant, drop_point, eta, capacity, status, seats_remaining, orders (in /runs/mine)
+	OrderResponse: id, run_id, user_id, status, items, amount, user_email
+
+- Points (Bearer)
+	- GET  /points -> { points, points_value }
+	- POST /points/redeem -> redeem in $5 per 10 points increments
 
 ### Frontend integration
 - In `proj2/frontend`, create `.env` with:
