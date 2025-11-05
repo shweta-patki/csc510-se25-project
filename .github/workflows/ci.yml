@@ -2,7 +2,9 @@ name: Run proj2 Tests on Merge to Main
 
 on:
   push:
-    branches: [main]
+    branches: 
+      - main
+      - test/github-actions
     paths:
       - 'proj2/**'
 
