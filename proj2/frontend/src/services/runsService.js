@@ -85,3 +85,10 @@ export async function listJoinedRunsHistory() {
 export async function removeOrder(runId, orderId) {
   return fetchWithAuth(`/runs/${runId}/orders/${orderId}`, { method: 'DELETE' });
 }
+
+export async function verifyOrderPin(runId, orderId, pin) {
+  return fetchWithAuth(`/runs/${runId}/orders/${orderId}/verify-pin`, {
+    method: 'POST',
+    body: JSON.stringify({ pin })
+  });
+}

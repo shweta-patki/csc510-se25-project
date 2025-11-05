@@ -37,21 +37,9 @@ export default function Menu({ restaurant, menuItems, onClose, onConfirm }) {
   const total = cart.reduce((sum, i) => sum + i.qty * i.price, 0);
 
   const handleConfirm = () => {
-
     if (cart.length > 0) {
       onConfirm(cart);
       setCart([]);
-    }
-    onClose();
-  };
-    // Only confirm when at least one item is selected. If so, generate a PIN,
-    // pass it to the parent and show it to the joining user.
-    if (selectedItems.length > 0) {
-      const generatedPin = String(Math.floor(1000 + Math.random() * 9000));
-      onConfirm(selectedItems, generatedPin);
-      setSelectedItems([]);
-      // Show the PIN to the user so they can give it to the runner.
-      alert(`Your 4-digit PIN is ${generatedPin}. Give this to the runner when they arrive.`);
     }
     onClose();
   };
@@ -92,13 +80,10 @@ export default function Menu({ restaurant, menuItems, onClose, onConfirm }) {
           </div>
         )}
 
-        <div className="menu-actions">
-          <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
-          <button className="btn btn-secondary" onClick={onClose}>
-            Cancel
-          </button>
+        <div className="menu-actions" style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+          <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
           <button className="btn btn-primary" onClick={handleConfirm} disabled={cart.length === 0}>
-            Confirm Order${cart.length ? ` ($${total.toFixed(2)})` : ''}
+            Confirm Order{cart.length ? ` ($${total.toFixed(2)})` : ''}
           </button>
         </div>
       </div>

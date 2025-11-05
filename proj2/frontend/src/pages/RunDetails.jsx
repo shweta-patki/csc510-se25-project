@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { getRunById, removeOrder, completeRun, cancelRun } from "../services/runsService";
+import { getRunById, removeOrder, completeRun, cancelRun, verifyOrderPin } from "../services/runsService";
 
 export default function RunDetails() {
   const { id } = useParams();
@@ -114,9 +114,34 @@ export default function RunDetails() {
                   <li key={o.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
                     <span>
                       <strong>{o.user_email}:</strong> {o.items} (${Number(o.amount).toFixed(2)})
+                      {o.status && (
+                        <span style={{ marginLeft: 8, fontStyle: 'italic' }}>status: {o.status}</span>
+                      )}
                     </span>
                     {run.status === 'active' && (
-                      <button className="btn btn-secondary" onClick={() => handleRemove(o.id)} disabled={loading}>Remove</button>
+                      <span style={{ display: 'flex', gap: 8 }}>
+                        {o.status !== 'delivered' && (
+                          <button
+                            className="btn btn-secondary"
+                            onClick={async () => {
+                              const pin = window.prompt('Enter 4-digit PIN shown by the user:');
+                              if (!pin) return;
+                              setLoading(true);
+                              setError("");
+                              try {
+                                await verifyOrderPin(run.id, o.id, pin);
+                                await load();
+                              } catch (e) {
+                                setError(e.message || 'Failed to verify PIN');
+                              } finally {
+                                setLoading(false);
+                              }
+                            }}
+                            disabled={loading}
+                          >Verify PIN</button>
+                        )}
+                        <button className="btn btn-secondary" onClick={() => handleRemove(o.id)} disabled={loading}>Remove</button>
+                      </span>
                     )}
                   </li>
                 ))}

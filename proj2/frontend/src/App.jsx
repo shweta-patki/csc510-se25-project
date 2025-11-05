@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuth } from './hooks/useAuth';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
 import PrivateRoute from './routes/PrivateRoute';
 
 //Pages
@@ -13,7 +14,6 @@ import YourRuns from './pages/YourRuns';
 import Profile from './pages/Profile';
 import History from './pages/History';
 import RunDetails from './pages/RunDetails';
-import PinEntry from './pages/PinEntry';
 
 //Components
 import Navbar from './components/Navbar';
@@ -36,8 +36,9 @@ function App() {
 
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Layout>
+      <ToastProvider>
+        <BrowserRouter>
+          <Layout>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -57,11 +58,6 @@ function App() {
             </PrivateRoute>
           } />
 
-          <Route path="/pin/:runId/:orderIndex" element={
-            <PrivateRoute>
-              <PinEntry runs={runs} setRuns={setRuns} />
-            </PrivateRoute>
-          } />
 
           <Route path="/broadcast" element={
             <PrivateRoute>
@@ -80,8 +76,9 @@ function App() {
           } />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-        </Layout>
-      </BrowserRouter>
+          </Layout>
+        </BrowserRouter>
+      </ToastProvider>
     </AuthProvider>
   );
 }

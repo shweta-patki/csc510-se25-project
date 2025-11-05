@@ -1,30 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { listMyRuns, completeRun, cancelRun, removeOrder } from "../services/runsService";
+import { listMyRuns, completeRun, cancelRun } from "../services/runsService";
 
 export default function YourRuns() {
   const { user } = useAuth();
   const [myRuns, setMyRuns] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const navigate = useNavigate();
 
   async function refresh() {
     setError("");
     try {
-  const mine = await listMyRuns();
-  setMyRuns(mine);
+      const mine = await listMyRuns();
+      setMyRuns(mine);
     } catch (e) {
       setError(e.message || "Failed to load runs");
     }
   }
 
-
   useEffect(() => {
     if (user) refresh();
   }, [user]);
-
 
   async function handleComplete(run) {
     if (!window.confirm("Mark this run complete and award points?")) return;
@@ -63,9 +60,6 @@ export default function YourRuns() {
 
       {error && (<div style={{ color: 'red', marginBottom: 12 }}>{error}</div>)}
 
-      {/* Broadcast moved to Broadcast tab for better UX */}
-
-      {/* My runs (only your broadcasts) */}
       <section style={{ marginBottom: 24 }}>
         <h2>My Runs</h2>
         {myRuns.length === 0 ? (
@@ -90,53 +84,20 @@ export default function YourRuns() {
                   <p><strong>Seats left:</strong> {run.seats_remaining}</p>
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                     <Link className="btn btn-secondary" to={`/your-runs/${run.id}`}>Manage</Link>
+                    {run.status === 'active' && (
+                      <>
+                        <button className="btn btn-secondary" onClick={() => handleComplete(run)} disabled={loading}>Complete</button>
+                        <button className="btn btn-secondary" onClick={() => handleCancel(run)} disabled={loading}>Cancel</button>
+                      </>
+                    )}
                   </div>
-                  {/* Orders and actions moved to details page */}
                 </div>
-
-//       {yourRuns.length === 0 ? (
-//         <p>You haven’t broadcasted any runs yet.</p>
-//       ) : (
-//         <div className="runs-list">
-//           {yourRuns.map((run) => (
-//             <div key={run.id} className="run-card">
-//               <div className="run-card-header">
-//                 <h3>{run.restaurant}</h3>
-//                 <span className="run-card-runner">ETA: {run.eta}</span>
-//               </div>
-//               <div className="run-card-body">
-//                 <p><strong>Seats Left:</strong> {run.seats}</p>
-//                 <p><strong>Orders Taken:</strong> {run.orders?.length || 0}</p>
-//                 {run.orders?.length > 0 && (
-//                   <ul>
-//                     {run.orders.map((o, i) => (
-//                       <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-//                         <div>
-//                           {o.user}: {o.items.join(", ")}
-//                           {o.delivered ? (
-//                             <span style={{ marginLeft: 8, color: 'green' }}>(Delivered)</span>
-//                           ) : null}
-//                         </div>
-//                         {!o.delivered && (
-//                           <div>
-//                             <button className="btn btn-primary" onClick={() => navigate(`/pin/${run.id}/${i}`)}>
-//                               Enter PIN
-//                             </button>
-//                           </div>
-//                         )}
-//                       </li>
-//                     ))}
-//                   </ul>
-//                 )}
               </div>
             ))}
           </div>
         )}
       </section>
 
-      {/* Available runs are surfaced on Home now */}
-
-      {/* No menu popup here; joining happens from Home */}
     </div>
   );
 }
