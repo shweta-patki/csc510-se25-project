@@ -84,7 +84,7 @@ def login(payload: AuthRequest, session: Session = Depends(get_session)):
     if not user or not verify_password(payload.password, user.password_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
     token = create_access_token(sub=user.id, email=user.email)
-    return {"user": {"id": user.id, "username": user.email, "points": user.points}, "token": token}
+    return {"user": {"id": user.id, "username": user.email, "points": int(user.points)}, "token": token}
 
 @app.get("/auth/me", response_model=UserOut)
 def me(claims=Depends(get_current_user_claims), session: Session = Depends(get_session)):
@@ -473,12 +473,12 @@ def complete_run(
     # Calculate total bill and points
     orders = session.exec(select(Order).where(Order.run_id == run_id)).all()
     total_amount = sum(order.amount for order in orders)
-    earned_points = total_amount / 10  # 1 point per $10
+    earned_points = round(total_amount / 10)  # 1 point per $10, rounded to nearest integer
     
     # Update run status
     food_run.status = "completed"
     
-    # Update runner's points
+    # Update runner's points 
     runner = session.get(User, user_id)
     runner.points += earned_points
     
@@ -513,8 +513,8 @@ def get_points(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    points_value = (user.points // 10) * 5  # $5 per 10 points
-    return {"points": user.points, "points_value": points_value}
+    points_value = int((user.points // 10) * 5)  # $5 per 10 points, ensuring integer
+    return {"points": int(user.points), "points_value": points_value}
 
 @app.post("/points/redeem")
 def redeem_points(

@@ -7,7 +7,7 @@ class User(SQLModel, table=True):
     # enforce unique via underlying SQLAlchemy Column (put index on the sa_column to avoid SQLModel conflict)
     email: str = Field(sa_column=Column(String, unique=True, index=True))
     password_hash: str
-    points: int = Field(default=0)
+    points: int = Field(default=0, ge=0)
     created_at: Optional[str] = Field(
         default=None,
         sa_column=Column(DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP")),
