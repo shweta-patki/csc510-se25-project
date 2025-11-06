@@ -19,11 +19,14 @@ class OrderCreate(BaseModel):
     amount: float
     pin: Optional[str] = None  # optional client-provided PIN; server will generate if missing
 
-class OrderResponse(OrderCreate):
+class OrderResponse(BaseModel):
+    # Public order details shared with runner and other joiners (no PIN)
     id: int
     run_id: int
     user_id: int
     status: str
+    items: str
+    amount: float
     user_email: str
 
 class OrderJoinResponse(BaseModel):

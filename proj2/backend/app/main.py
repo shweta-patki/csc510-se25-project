@@ -106,19 +106,20 @@ def create_run(
     session: Session = Depends(get_session)
 ):
     user_id = int(claims["sub"])
-    food_run = FoodRun(**run.dict(), runner_id=user_id)
+    food_run = FoodRun(**run.model_dump(), runner_id=user_id)
     session.add(food_run)
     session.commit()
     session.refresh(food_run)
     # respond with seats_remaining derived from capacity - current orders
     orders_count = session.exec(select(Order).where(Order.run_id == food_run.id, Order.status != "cancelled")).all()
     seats_remaining = max(food_run.capacity - len(orders_count), 0)
-    return {
-        **food_run.dict(),
+    base = food_run.model_dump(include={
+        "id", "runner_id", "restaurant", "drop_point", "eta", "capacity", "status"
+    })
+    return {**base,
         "runner_username": claims.get("email", str(user_id)),
         "seats_remaining": seats_remaining,
-        "orders": []
-    }
+        "orders": []}
 
 @app.get("/runs", response_model=List[FoodRunResponse])
 def list_runs(
@@ -133,12 +134,13 @@ def list_runs(
         seats_remaining = max(r.capacity - len(count), 0)
         # fetch runner email
         runner = session.get(User, r.runner_id)
-        responses.append({
-            **r.dict(),
+        base = r.model_dump(include={
+            "id", "runner_id", "restaurant", "drop_point", "eta", "capacity", "status"
+        })
+        responses.append({**base,
             "runner_username": runner.email if runner else str(r.runner_id),
             "seats_remaining": seats_remaining,
-            "orders": []
-        })
+            "orders": []})
     return responses
 
 @app.post("/runs/{run_id}/orders", response_model=OrderJoinResponse)
@@ -166,7 +168,7 @@ def create_order(
     
     # ensure a 4-digit PIN
     pin = order.pin if order.pin else f"{int(os.urandom(2).hex(), 16) % 9000 + 1000:04d}"
-    order_row = Order(**{**order.dict(), "pin": pin}, run_id=run_id, user_id=user_id)
+    order_row = Order(**{**order.model_dump(), "pin": pin}, run_id=run_id, user_id=user_id)
     session.add(order_row)
     session.commit()
     session.refresh(order_row)
@@ -236,12 +238,13 @@ def list_available_runs(
         seats_remaining = max(r.capacity - len(count), 0)
         if seats_remaining > 0:
             runner = session.get(User, r.runner_id)
-            responses.append({
-                **r.dict(),
+            base = r.model_dump(include={
+                "id", "runner_id", "restaurant", "drop_point", "eta", "capacity", "status"
+            })
+            responses.append({**base,
                 "runner_username": runner.email if runner else str(r.runner_id),
                 "seats_remaining": seats_remaining,
-                "orders": []
-            })
+                "orders": []})
     return responses
 
 @app.get("/runs/mine", response_model=List[FoodRunResponse])
@@ -269,12 +272,13 @@ def list_my_runs(
                 "amount": o.amount,
                 "user_email": u.email if u else str(o.user_id),
             })
-        responses.append({
-            **r.dict(),
+        base = r.model_dump(include={
+            "id", "runner_id", "restaurant", "drop_point", "eta", "capacity", "status"
+        })
+        responses.append({**base,
             "runner_username": runner.email if runner else str(r.runner_id),
             "seats_remaining": seats_remaining,
-            "orders": order_payload
-        })
+            "orders": order_payload})
     return responses
 
 @app.get("/runs/id/{run_id}", response_model=FoodRunResponse)
@@ -307,12 +311,13 @@ def get_run_details(
             "user_email": u.email if u else str(o.user_id),
         })
 
-    return {
-        **run.dict(),
+    base = run.model_dump(include={
+        "id", "runner_id", "restaurant", "drop_point", "eta", "capacity", "status"
+    })
+    return {**base,
         "runner_username": runner.email if runner else str(run.runner_id),
         "seats_remaining": seats_remaining,
-        "orders": order_payload,
-    }
+        "orders": order_payload}
 
 @app.get("/runs/joined", response_model=List[JoinedRunResponse])
 def list_joined_runs(
@@ -393,12 +398,13 @@ def list_my_runs_history(
                 "amount": o.amount,
                 "user_email": u.email if u else str(o.user_id),
             })
-        responses.append({
-            **r.dict(),
+        base = r.model_dump(include={
+            "id", "runner_id", "restaurant", "drop_point", "eta", "capacity", "status"
+        })
+        responses.append({**base,
             "runner_username": runner.email if runner else str(r.runner_id),
             "seats_remaining": 0,
-            "orders": order_payload,
-        })
+            "orders": order_payload})
     return responses
 
 @app.get("/runs/joined/history", response_model=List[JoinedRunResponse])
@@ -423,12 +429,13 @@ def list_joined_runs_history(
                 Order.user_id == user_id,
             )
         ).first()
-        payload = {
-            **r.dict(),
+        base = r.model_dump(include={
+            "id", "runner_id", "restaurant", "drop_point", "eta", "capacity", "status"
+        })
+        payload = {**base,
             "runner_username": runner.email if runner else str(r.runner_id),
             "seats_remaining": 0,
-            "orders": [],
-        }
+            "orders": []}
         if mine:
             payload["my_order"] = {
                 "id": mine.id,
