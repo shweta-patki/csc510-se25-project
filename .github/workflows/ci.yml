@@ -2,11 +2,12 @@ name: Run proj2 Tests on Merge to Main
 
 on:
   push:
-    branches: 
+    branches:
       - main
-      - test/github-actions
+      - enhancement/styling-testcases
     paths:
       - 'proj2/**'
+      - '.github/**'
 
 jobs:
   frontend-tests:
@@ -27,8 +28,33 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run frontend tests
-        run: npx vitest run
+      - name: Run frontend tests with coverage
+        run: |
+          npx vitest run --coverage.enabled true --coverage.provider=v8 \
+            --coverage.reporters=json-summary,html,text \
+            --coverage.exclude='**/node_modules/**'
+
+
+      - name: Verify coverage file exists
+        run: ls -la coverage || echo "Coverage folder not found!"
+
+      - name: Generate frontend coverage badge
+        run: |
+          FRONTEND_COVERAGE=$(jq '.total.lines.pct' coverage/coverage-summary.json | xargs printf "%.0f")
+          echo "Frontend coverage: ${FRONTEND_COVERAGE}%"
+          COLOR="red"
+          if [ "$FRONTEND_COVERAGE" -ge 80 ]; then COLOR="green"; elif [ "$FRONTEND_COVERAGE" -ge 60 ]; then COLOR="orange"; fi
+          npx badge-maker --label="Frontend Coverage" --message="${FRONTEND_COVERAGE}%" --color="${COLOR}" --style="flat" > frontend-coverage-badge.svg
+        shell: bash
+
+      - name: Upload frontend coverage artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: |
+            proj2/frontend/coverage
+            proj2/frontend/frontend-coverage-badge.svg
 
   backend-tests:
     name: Backend (Pytest)
@@ -49,12 +75,31 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest
+          pip install pytest pytest-cov
 
-      - name: Run backend tests
+      - name: Run backend tests with coverage
         env:
           DATABASE_URL: sqlite:///./test.db
         run: |
-          echo "Running pytest in proj2/backend/tests"
+          echo "Running pytest with coverage"
           rm -f test.db || true
-          pytest tests/ -v --maxfail=3 --disable-warnings
+          pytest tests/ -v --maxfail=3 --disable-warnings \
+            --cov=. --cov-report=xml:coverage.xml --cov-report=term
+
+      - name: Generate backend coverage badge
+        run: |
+          BACKEND_COVERAGE=$(grep -oP 'line-rate="\K[0-9.]+' coverage.xml | awk '{sum+=$1} END {printf "%.0f", (sum/NR)*100}')
+          echo "Backend coverage: ${BACKEND_COVERAGE}%"
+          COLOR="red"
+          if [ "$BACKEND_COVERAGE" -ge 80 ]; then COLOR="green"; elif [ "$BACKEND_COVERAGE" -ge 60 ]; then COLOR="orange"; fi
+          npx badge-maker --label="Backend Coverage" --message="${BACKEND_COVERAGE}%" --color="${COLOR}" --style="flat" > backend-coverage-badge.svg
+        shell: bash
+
+      - name: Upload backend coverage artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: |
+            proj2/backend/coverage.xml
+            proj2/backend/backend-coverage-badge.svg

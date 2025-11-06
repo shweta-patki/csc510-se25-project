@@ -93,15 +93,9 @@ npm install --save-dev vitest jsdom @testing-library/react @testing-library/jest
 
 Once testing is set up:
 ```bash
-npm run test
+npx vitest run --coverage
 ```
 > We’ll use **Vitest + React Testing Library** for component and route testing.
-
----
-
-## 🎨 Styling (Tailwind to be added later)
-We will integrate **TailwindCSS** in a later milestone (Week 4).  
-Current layout uses basic inline styles to keep things simple during development.
 
 ---
 
@@ -110,8 +104,7 @@ Current layout uses basic inline styles to keep things simple during development
 - ⚛️ React (Vite)
 - 🧭 React Router DOM
 - 📦 NPM + ES Modules
-- 🧪 Vitest (planned)
-- 🎨 TailwindCSS (planned)
+- 🧪 Vitest
 
 ---
 ## 📦 Release History
@@ -218,11 +211,10 @@ VITE_API_BASE=http://localhost:5050
 ---
 
 ## 🛠️ Badges (to add once CI is ready)
-```
-![Build](https://github.com/<your-username>/<repo>/actions/workflows/ci.yml/badge.svg)
-![Coverage](https://img.shields.io/codecov/c/github/<your-username>/<repo>)
-![License](https://img.shields.io/github/license/<your-username>/<repo>)
-```
+[![Tests](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/ci.yml/badge.svg)](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/ci.yml)
+![Frontend Coverage](frontend/frontend-coverage-badge.svg)
+![Backend Coverage](backend/backend-coverage-badge.svg)
+![License](https://img.shields.io/github/license/shweta-patki/csc510-se25-project)
 
 ---
 
