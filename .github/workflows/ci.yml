@@ -7,6 +7,7 @@ on:
       - enhancement/styling-testcases
     paths:
       - 'proj2/**'
+      - '.github/**'
 
 jobs:
   frontend-tests:
@@ -28,7 +29,7 @@ jobs:
         run: npm ci
 
       - name: Run frontend tests with coverage
-        run: npx vitest run --coverage
+        run: npx vitest run --coverage.enabled true --coverage.reports=json-summary,html,text
 
       - name: Upload frontend coverage report
         if: success()
@@ -39,9 +40,12 @@ jobs:
 
       - name: Generate frontend coverage badge
         run: |
-          FRONTEND_COVERAGE=$(jq '.total.lines.pct' coverage/coverage-summary.json)
+          FRONTEND_COVERAGE=$(jq '.total.lines.pct' coverage/coverage-summary.json | xargs printf "%.0f")
           echo "Frontend coverage: ${FRONTEND_COVERAGE}%"
-          npx badge-maker --label="Frontend Coverage" --message="${FRONTEND_COVERAGE}%" --color="green" --style="flat" > frontend-coverage-badge.svg
+          COLOR="red"
+          if [ "$FRONTEND_COVERAGE" -ge 80 ]; then COLOR="green"; elif [ "$FRONTEND_COVERAGE" -ge 60 ]; then COLOR="orange"; fi
+          npx badge-maker --label="Frontend Coverage" --message="${FRONTEND_COVERAGE}%" --color="${COLOR}" --style="flat" > frontend-coverage-badge.svg
+
         shell: bash
 
       - name: Upload frontend coverage report
@@ -92,7 +96,9 @@ jobs:
         run: |
           BACKEND_COVERAGE=$(grep -oP 'line-rate="\K[0-9.]+' coverage.xml | awk '{sum+=$1} END {printf "%.0f", (sum/NR)*100}')
           echo "Backend coverage: ${BACKEND_COVERAGE}%"
-          npx badge-maker --label="Backend Coverage" --message="${BACKEND_COVERAGE}%" --color="blue" --style="flat" > backend-coverage-badge.svg
+          COLOR="red"
+          if [ "$BACKEND_COVERAGE" -ge 80 ]; then COLOR="green"; elif [ "$BACKEND_COVERAGE" -ge 60 ]; then COLOR="orange"; fi
+          npx badge-maker --label="Backend Coverage" --message="${BACKEND_COVERAGE}%" --color="${COLOR}" --style="flat" > backend-coverage-badge.svg
         shell: bash
 
       - name: Upload backend coverage report
