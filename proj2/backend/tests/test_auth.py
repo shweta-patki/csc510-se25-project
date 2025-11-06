@@ -21,7 +21,7 @@ main.create_db_and_tables()
 
 
 def test_register_login_and_me_flow():
-    payload = {"email": "test@example.com", "password": "secret"}
+    payload = {"email": "test@ncsu.edu", "password": "secret"}
 
     # Register
     r = client.post("/auth/register", json=payload)
