@@ -114,6 +114,16 @@ Current layout uses basic inline styles to keep things simple during development
 - 🎨 TailwindCSS (planned)
 
 ---
+## 📦 Release History
+
+- **v0.4.1** – Enhanced Food Run logic and added GitHub Actions CI workflow  
+- **v0.4.0** – Added Points system, PIN verification, and redesigned Profile page  
+- **v0.3.1** – Updated frontend comments, cleaned codebase, and minor refactors  
+- **v0.3.0** – Implemented ordering and run logic; major backend refactor with new endpoints  
+- **v0.2.0** – Added Navbar, Footer, split Home/Broadcast pages, and live run updates  
+- **v0.1.0** – Initial prototype with React (Vite) + FastAPI integration and login/register flow
+
+---
 
 ## 📸 Demo (coming soon)
 `<iframe src="https://www.youtube.com/embed/XXXXX" width="560" height="315"></iframe>`
