@@ -36,20 +36,27 @@ jobs:
         with:
           name: vitest-coverage-report
           path: proj2/frontend/coverage
-          
-      - name: Generate coverage badge
-        uses: emibcn/badge-action@v2
-        with:
-          label: coverage
-          status: $(jq '.total.lines.pct' proj2/frontend/coverage/coverage-summary.json)
-          color: green
-          path: proj2/frontend/coverage-badge.svg
 
-      - name: Upload coverage badge
+      - name: Generate frontend coverage badge
+        run: |
+          FRONTEND_COVERAGE=$(jq '.total.lines.pct' coverage/coverage-summary.json)
+          echo "Frontend coverage: ${FRONTEND_COVERAGE}%"
+          npx badge-maker --label="Frontend Coverage" --message="${FRONTEND_COVERAGE}%" --color="green" --style="flat" > frontend-coverage-badge.svg
+        shell: bash
+
+      - name: Upload frontend coverage report
+        if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-badge
-          path: proj2/frontend/coverage-badge.svg
+          name: vitest-coverage-report
+          path: proj2/frontend/coverage
+
+      - name: Upload frontend coverage badge
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage-badge
+          path: proj2/frontend/frontend-coverage-badge.svg
 
 
   backend-tests:
@@ -81,10 +88,24 @@ jobs:
           rm -f test.db || true
           pytest tests/ -v --maxfail=3 --disable-warnings --cov=. --cov-report=xml:coverage.xml --cov-report=term
 
+      - name: Generate backend coverage badge
+        run: |
+          BACKEND_COVERAGE=$(grep -oP 'line-rate="\K[0-9.]+' coverage.xml | awk '{sum+=$1} END {printf "%.0f", (sum/NR)*100}')
+          echo "Backend coverage: ${BACKEND_COVERAGE}%"
+          npx badge-maker --label="Backend Coverage" --message="${BACKEND_COVERAGE}%" --color="blue" --style="flat" > backend-coverage-badge.svg
+        shell: bash
+
       - name: Upload backend coverage report
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: pytest-coverage-report
           path: proj2/backend/coverage.xml
+
+      - name: Upload backend coverage badge
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-badge
+          path: proj2/backend/backend-coverage-badge.svg
       

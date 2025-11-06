@@ -213,7 +213,8 @@ VITE_API_BASE=http://localhost:5050
 ## 🛠️ Badges (to add once CI is ready)
 ```
 ![Build](https://github.com/<your-username>/<repo>/actions/workflows/ci.yml/badge.svg)
-![Coverage](./proj2/frontend/coverage-badge.svg)
+![Frontend Coverage](proj2/frontend/frontend-coverage-badge.svg)
+![Backend Coverage](proj2/backend/backend-coverage-badge.svg)
 ![License](https://img.shields.io/github/license/<your-username>/<repo>)
 ```
 
