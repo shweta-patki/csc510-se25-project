@@ -30,8 +30,10 @@ jobs:
 
       - name: Run frontend tests with coverage
         run: |
-          npx vitest run --coverage.enabled true --coverage.provider=istanbul \
-            --coverage.reports=json-summary,html,text
+          npx vitest run --coverage.enabled true --coverage.provider=v8 \
+            --coverage.reports=json-summary,html,text \
+            --coverage.exclude='**/node_modules/**'
+
 
       - name: Verify coverage file exists
         run: ls -la coverage || echo "Coverage folder not found!"
