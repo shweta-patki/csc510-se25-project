@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { listMyRuns, completeRun, cancelRun } from "../services/runsService";
+import { listMyRuns, completeRun, cancelRun, markArrived, markRunAsPaid} from "../services/runsService";
 
 export default function YourRuns() {
   const { user } = useAuth();
@@ -23,12 +23,52 @@ export default function YourRuns() {
     if (user) refresh();
   }, [user]);
 
+  async function handlePaid(run) {
+    if (!window.confirm("Have you paid the restaurant?")) return;
+    setLoading(true);
+    setError("");
+    try {
+      if (!run || run.id === undefined || run.id === null) {
+        setError('Invalid run id; cannot mark as paid');
+        return;
+      }
+      await markRunAsPaid(Number(run.id));
+      await refresh();
+    } catch (e) {
+      setError(e.message || "Failed to mark run as paid");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleArrived(run) {
+    if (!window.confirm("Have you arrived at the destination?")) return;
+    setLoading(true);
+    setError("");
+    try {
+      if (!run || run.id === undefined || run.id === null) {
+        setError('Invalid run id; cannot mark as arrived');
+        return;
+      }
+      await markArrived(Number(run.id));
+      await refresh();
+    } catch (e) {
+      setError(e.message || "Failed to mark run as arrived");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function handleComplete(run) {
     if (!window.confirm("Mark this run complete and award points?")) return;
     setLoading(true);
     setError("");
     try {
-      await completeRun(run.id);
+      if (!run || run.id === undefined || run.id === null) {
+        setError('Invalid run id; cannot complete run');
+        return;
+      }
+      await completeRun(Number(run.id));
       await refresh();
     } catch (e) {
       setError(e.message || "Failed to complete run");
@@ -42,7 +82,11 @@ export default function YourRuns() {
     setLoading(true);
     setError("");
     try {
-      await cancelRun(run.id);
+      if (!run || run.id === undefined || run.id === null) {
+        setError('Invalid run id; cannot cancel run');
+        return;
+      }
+      await cancelRun(Number(run.id));
       await refresh();
     } catch (e) {
       setError(e.message || "Failed to cancel run");
@@ -84,8 +128,10 @@ export default function YourRuns() {
                   <p><strong>Seats left:</strong> {run.seats_remaining}</p>
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                     <Link className="btn btn-secondary" to={`/your-runs/${run.id}`}>Manage</Link>
-                    {run.status === 'active' && (
+                    {(run.status === 'active' || run.status === 'paid' || run.status === 'arrived') && (
                       <>
+                        <button className="btn btn-secondary" onClick={() => handlePaid(run)} disabled={loading}>Paid Restaurant</button>
+                        <button className="btn btn-secondary" onClick={() => handleArrived(run)} disabled={loading}>Arrived at destination</button>
                         <button className="btn btn-secondary" onClick={() => handleComplete(run)} disabled={loading}>Complete</button>
                         <button className="btn btn-secondary" onClick={() => handleCancel(run)} disabled={loading}>Cancel</button>
                       </>

@@ -22,7 +22,7 @@ export default function RunCard({ run, onJoin ,joinedRuns}) {
         <button
           className="btn btn-primary"
           onClick={() => onJoin(run)}
-          disabled={run.seats_remaining <= 0 || hasJoined || isOwner}
+          style={{ display: run.seats_remaining <= 0 || hasJoined || isOwner ? "none" : "block" }} 
         >
           {isOwner
             ? "Your Run"

@@ -62,6 +62,14 @@ export async function unjoinRun(runId) {
   return fetchWithAuth(`/runs/${runId}/orders/me`, { method: 'DELETE' });
 }
 
+export async function markRunAsPaid(runId) {
+  return fetchWithAuth(`/runs/${runId}/paid`, { method: 'PUT' });
+}
+
+export async function markArrived(runId) {
+  return fetchWithAuth(`/runs/${runId}/arrived`, { method: 'PUT' });
+}
+
 export async function completeRun(runId) {
   return fetchWithAuth(`/runs/${runId}/complete`, { method: 'PUT' });
 }

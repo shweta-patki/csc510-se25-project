@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { getRunById, removeOrder, completeRun, cancelRun, verifyOrderPin } from "../services/runsService";
+import { getRunById, removeOrder, completeRun, cancelRun, verifyOrderPin, markRunAsPaid, markArrived} from "../services/runsService";
 import { useToast } from "../context/ToastContext";
 
 export default function RunDetails() {
@@ -38,6 +38,42 @@ export default function RunDetails() {
       await load();
     } catch (e) {
       setError(e.message || "Failed to remove order");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handlePaid() {
+    if (!window.confirm("Have you paid the restaurant?")) return;
+    if (!run || run.id === undefined || run.id === null) {
+      setError('Invalid run id; cannot mark as paid');
+      return;
+    }
+    setLoading(true);
+    setError("");
+    try {
+      await markRunAsPaid(Number(run.id));
+      await load();
+    } catch (e) {
+      setError(e.message || "Failed to mark run as paid");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleArrived() {
+    if (!window.confirm("Have you arrived at the destination?")) return;
+    if (!run || run.id === undefined || run.id === null) {
+      setError('Invalid run id; cannot mark as arrived');
+      return;
+    }
+    setLoading(true);
+    setError("");
+    try {
+      await markArrived(Number(run.id));
+      await load();
+    } catch (e) {
+      setError(e.message || "Failed to mark run as arrived");
     } finally {
       setLoading(false);
     }
@@ -105,8 +141,10 @@ export default function RunDetails() {
             <p><strong>Seats left:</strong> {run.seats_remaining}</p>
             <p><strong>Total participants:</strong> {1 + (Array.isArray(run.orders) ? run.orders.length : 0)}</p>
 
-            {run.status === 'active' && (
+            {(run.status === 'active' || run.status === 'paid' || run.status === 'arrived') && (
               <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+                <button className="btn btn-secondary" onClick={handlePaid} disabled={loading}>Paid Restaurant</button>
+                <button className="btn btn-secondary" onClick={handleArrived} disabled={loading}>Arrived at destination</button>
                 <button className="btn btn-secondary" onClick={handleComplete} disabled={loading}>Complete</button>
                 <button className="btn btn-secondary" onClick={handleCancel} disabled={loading}>Cancel</button>
               </div>

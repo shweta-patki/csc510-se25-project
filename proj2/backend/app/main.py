@@ -333,7 +333,13 @@ def list_joined_runs(
     run_ids = [row[0] if isinstance(row, (list, tuple)) else row for row in rows]
     if not run_ids:
         return []
-    runs = session.exec(select(FoodRun).where(FoodRun.id.in_(run_ids), FoodRun.status == "active")).all()
+    # include runs that are still in-progress for joiners (active, paid, arrived)
+    runs = session.exec(
+        select(FoodRun).where(
+            FoodRun.id.in_(run_ids),
+            (FoodRun.status != "cancelled") & (FoodRun.status != "completed")
+        )
+    ).all()
     responses = []
     for r in runs:
         count = session.exec(select(Order).where(Order.run_id == r.id, Order.status != "cancelled")).all()
