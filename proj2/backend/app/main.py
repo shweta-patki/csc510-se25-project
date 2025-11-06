@@ -131,6 +131,9 @@ def list_runs(
     for r in runs:
         count = session.exec(select(Order).where(Order.run_id == r.id, Order.status != "cancelled")).all()
         seats_remaining = max(r.capacity - len(count), 0)
+        # if the order has been picked up, treat run as full (no seats remaining)
+        if any(getattr(o, "status", "") == "picked up" for o in count):
+            seats_remaining = 0
         # fetch runner email
         runner = session.get(User, r.runner_id)
         responses.append({
@@ -412,7 +415,7 @@ def list_joined_runs_history(
     run_ids = [row[0] if isinstance(row, (list, tuple)) else row for row in rows]
     if not run_ids:
         return []
-    runs = session.exec(select(FoodRun).where(FoodRun.id.in_(run_ids), FoodRun.status != "active")).all()
+    runs = session.exec(select(FoodRun).where(FoodRun.id.in_(run_ids), (FoodRun.status == "cancelled") | (FoodRun.status == "completed"))).all()
     responses = []
     for r in runs:
         runner = session.get(User, r.runner_id)
@@ -463,6 +466,42 @@ def runner_remove_order(
     session.commit()
     return {"message": "Order removed"}
 
+@app.put("/runs/{run_id}/paid")
+def paid_run(
+    run_id: int,
+    claims=Depends(get_current_user_claims),
+    session: Session = Depends(get_session)
+):
+    user_id = int(claims["sub"])
+    food_run = session.get(FoodRun, run_id)
+    if not food_run:
+        raise HTTPException(status_code=404, detail="Run not found")
+    if food_run.runner_id != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    if food_run.status != "active":
+        raise HTTPException(status_code=400, detail="Run is not active")
+    food_run.status = "paid"
+    session.commit()
+    return {"message": "Run marked as paid"}
+
+@app.put("/runs/{run_id}/arrived")
+def arrived_run(
+    run_id: int,
+    claims=Depends(get_current_user_claims),
+    session: Session = Depends(get_session)
+):
+    user_id = int(claims["sub"])
+    food_run = session.get(FoodRun, run_id)
+    if not food_run:
+        raise HTTPException(status_code=404, detail="Run not found")
+    if food_run.runner_id != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    if food_run.status != "paid":
+        raise HTTPException(status_code=400, detail="Run did not get picked up yet")
+    food_run.status = "arrived"
+    session.commit()
+    return {"message": "Run marked as arrived"}
+
 @app.put("/runs/{run_id}/complete")
 def complete_run(
     run_id: int,
@@ -475,6 +514,8 @@ def complete_run(
         raise HTTPException(status_code=404, detail="Run not found")
     if food_run.runner_id != user_id:
         raise HTTPException(status_code=403, detail="Not authorized")
+    if food_run.status != "arrived":
+        raise HTTPException(status_code=400, detail="Run has not arrived yet")
     
     # Calculate total bill and points
     orders = session.exec(select(Order).where(Order.run_id == run_id)).all()

@@ -20,7 +20,7 @@ class FoodRun(SQLModel, table=True):
     drop_point: str
     eta: str
     capacity: int = Field(default=5)  # maximum number of joiners/orders
-    status: str = Field(default="active")  # active, completed, cancelled
+    status: str = Field(default="active")  # active, paid, arrived, completed, cancelled
     created_at: Optional[str] = Field(
         default=None,
         sa_column=Column(DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP")),
@@ -32,7 +32,7 @@ class Order(SQLModel, table=True):
     user_id: int = Field(foreign_key="user.id")
     items: str  # JSON string of ordered items
     amount: float
-    status: str = Field(default="pending")  # pending, paid, delivered
+    status: str = Field(default="pending")  # pending, picked up, arrived, delivered
     pin: Optional[str] = None  # 4-digit PIN for order pickup verification
     created_at: Optional[str] = Field(
         default=None,
