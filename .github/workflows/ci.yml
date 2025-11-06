@@ -4,7 +4,7 @@ on:
   push:
     branches: 
       - main
-      - test/github-actions
+      - enhancement/styling-testcases
     paths:
       - 'proj2/**'
 
@@ -27,8 +27,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run frontend tests
-        run: npx vitest run
+      - name: Run frontend tests with coverage
+        run: npx vitest run --coverage
+
+      - name: Upload frontend coverage report
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitest-coverage-report
+          path: proj2/frontend/coverage
 
   backend-tests:
     name: Backend (Pytest)
