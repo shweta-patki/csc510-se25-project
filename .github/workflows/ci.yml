@@ -31,7 +31,7 @@ jobs:
       - name: Run frontend tests with coverage
         run: |
           npx vitest run --coverage.enabled true --coverage.provider=v8 \
-            --coverage.reports=json-summary,html,text \
+            --coverage.reporters=json-summary,html,text \
             --coverage.exclude='**/node_modules/**'
 
 
