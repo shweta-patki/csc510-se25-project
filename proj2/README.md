@@ -212,8 +212,8 @@ VITE_API_BASE=http://localhost:5050
 
 ## 🛠️ Badges (to add once CI is ready)
 [![Tests](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/ci.yml/badge.svg)](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/ci.yml)
-![Frontend Coverage](proj2/frontend/frontend-coverage-badge.svg)
-![Backend Coverage](proj2/backend/backend-coverage-badge.svg)
+![Frontend Coverage](frontend/frontend-coverage-badge.svg)
+![Backend Coverage](backend/backend-coverage-badge.svg)
 ![License](https://img.shields.io/github/license/shweta-patki/csc510-se25-project)
 
 ---
