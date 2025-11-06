@@ -79,7 +79,7 @@ export default function Broadcast() {
               value={dropPoint}
               onChange={(e) => setDropPoint(e.target.value)}
               placeholder="e.g., EBII Lobby"
-              required
+              // required
             />
           </div>
 
