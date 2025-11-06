@@ -147,6 +147,13 @@ body {
   box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1);
 }
 
+/* Error state for inputs */
+.input-error {
+  border-color: var(--ncsu-red) !important;
+  background-color: #FFF5F5;
+  box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.08);
+}
+
 /* ==========================================================================
    Auth Pages (Login / Register)
    ========================================================================== */

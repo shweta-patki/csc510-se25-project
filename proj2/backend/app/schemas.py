@@ -1,17 +1,9 @@
 from typing import List, Optional
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, EmailStr
 
 class AuthRequest(BaseModel):
     email: EmailStr
     password: str
-
-    @field_validator("email")
-    def must_be_ncsu(cls, v: EmailStr) -> EmailStr:
-        # enforce exact domain 'ncsu.edu' (disallow subdomains like mail.ncsu.edu)
-        domain = v.rsplit("@", 1)[-1].lower()
-        if domain != "ncsu.edu":
-            raise ValueError("Email must be an @ncsu.edu address.")
-        return v
 
 class UserOut(BaseModel):
     id: int

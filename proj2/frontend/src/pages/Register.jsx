@@ -12,14 +12,15 @@ const Register = () => {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
 
-    const handleRegister = async (credentials) => {
-        try {
-            await register(credentials.username ?? credentials.email ?? credentials, credentials.password);
-            navigate('/'); // go to dashboard after successful register
-        } catch (err) {
-            setError(err.message || 'Registration failed');
-        }
-    };
+  const handleRegister = async (credentials) => {
+    try {
+      await register(credentials.username ?? credentials.email ?? credentials, credentials.password);
+      navigate('/'); // go to dashboard after successful register
+    } catch (err) {
+      const msg = (err?.message || 'Registration failed').replace(/\s*\(\d+\)$/, '');
+      setError(msg);
+    }
+  };
 
     return (
     <div className='auth-page'>

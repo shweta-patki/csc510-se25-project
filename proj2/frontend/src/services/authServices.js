@@ -28,9 +28,21 @@ async function postJson(path, body) {
         body: JSON.stringify(body),
     });
     if (!res.ok) {
-        let detail = 'Request failed';
-        try { const data = await res.json(); detail = data.detail || data.error || detail; } catch {}
-        throw new Error(detail + ` (${res.status})`);
+        let message = 'Request failed';
+        try {
+            const data = await res.json();
+            let detail = data?.detail ?? data?.error ?? data?.message;
+            if (Array.isArray(detail)) {
+                // FastAPI 422 validation errors: join messages
+                const msgs = detail.map((d) => d?.msg || (typeof d === 'string' ? d : JSON.stringify(d)));
+                message = msgs.join('; ');
+            } else if (typeof detail === 'string') {
+                message = detail;
+            } else if (detail) {
+                message = JSON.stringify(detail);
+            }
+        } catch {}
+        throw new Error(`${message} (${res.status})`);
     }
     return res.json();
 }
