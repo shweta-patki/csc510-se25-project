@@ -51,10 +51,10 @@ describe("AuthForm Component", () => {
     const emailInput = screen.getByLabelText(/email/i);
     const passwordInput = screen.getByLabelText(/password/i);
 
-    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(emailInput, { target: { value: "test@ncsu.edu" } });
     fireEvent.change(passwordInput, { target: { value: "mypassword" } });
 
-    expect(emailInput.value).toBe("test@example.com");
+    expect(emailInput.value).toBe("test@ncsu.edu");
     expect(passwordInput.value).toBe("mypassword");
   });
 
@@ -68,7 +68,7 @@ describe("AuthForm Component", () => {
     );
 
     fireEvent.change(screen.getByLabelText(/email/i), {
-      target: { value: "user@example.com" },
+      target: { value: "user@ncsu.edu" },
     });
     fireEvent.change(screen.getByLabelText(/password/i), {
       target: { value: "password123" },
@@ -77,7 +77,7 @@ describe("AuthForm Component", () => {
     fireEvent.click(screen.getByRole("button", { name: /login/i }));
 
     await waitFor(() => {
-      expect(mockLogin).toHaveBeenCalledWith("user@example.com", "password123");
+      expect(mockLogin).toHaveBeenCalledWith("user@ncsu.edu", "password123");
     });
   });
 
@@ -91,7 +91,7 @@ describe("AuthForm Component", () => {
     );
 
     fireEvent.change(screen.getByLabelText(/email/i), {
-      target: { value: "new@example.com" },
+      target: { value: "new@ncsu.edu" },
     });
     fireEvent.change(screen.getByLabelText(/password/i), {
       target: { value: "securepass" },
@@ -100,7 +100,7 @@ describe("AuthForm Component", () => {
     fireEvent.click(screen.getByRole("button", { name: /register/i }));
 
     await waitFor(() => {
-      expect(mockRegister).toHaveBeenCalledWith("new@example.com", "securepass");
+      expect(mockRegister).toHaveBeenCalledWith("new@ncsu.edu", "securepass");
     });
   });
 
@@ -114,7 +114,7 @@ describe("AuthForm Component", () => {
     );
 
     fireEvent.change(screen.getByLabelText(/email/i), {
-      target: { value: "fail@example.com" },
+      target: { value: "fail@ncsu.edu" },
     });
     fireEvent.change(screen.getByLabelText(/password/i), {
       target: { value: "wrong" },
