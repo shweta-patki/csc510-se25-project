@@ -12,22 +12,33 @@ const AuthForm = ({ isLogin = true, onSubmit, className = '' }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    const trimmedEmail = (email || '').trim();
+    // Client-side guidance: enforce NCSU format before calling API
+    if (!trimmedEmail.includes('@')) {
+      setError('Please enter a valid email address');
+      return;
+    }
+    if (!trimmedEmail.toLowerCase().endsWith('@ncsu.edu')) {
+      setError('Please enter a valid NCSU email address');
+      return;
+    }
     try {
       if (onSubmit) {
-        await onSubmit({ username: email, password });
+        await onSubmit({ username: trimmedEmail, password });
       } else {
-        if (isLogin) await ctxLogin(email, password);
-        else await ctxRegister(email, password);
+        if (isLogin) await ctxLogin(trimmedEmail, password);
+        else await ctxRegister(trimmedEmail, password);
         navigate('/');
       }
     } catch (err) {
-      setError(err.message || 'Authentication failed');
+      const msg = (err?.message || 'Authentication failed').replace(/\s*\(\d+\)$/, '');
+      setError(msg);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className={`auth-form ${className}`}>
-      {error && <p className="error">{error}</p>}
+      {error && <p className="auth-error" role="alert">{error}</p>}
 
       <div className="form-group">
         <label htmlFor="email">Email</label>
@@ -37,6 +48,8 @@ const AuthForm = ({ isLogin = true, onSubmit, className = '' }) => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Enter your email"
+          className={error ? 'input-error' : ''}
+          aria-invalid={!!error}
           required
         />
       </div>
@@ -49,6 +62,8 @@ const AuthForm = ({ isLogin = true, onSubmit, className = '' }) => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Enter your password"
+          className={error ? 'input-error' : ''}
+          aria-invalid={!!error}
           required
         />
       </div>

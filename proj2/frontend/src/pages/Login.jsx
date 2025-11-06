@@ -16,14 +16,15 @@ const Login = () => {
       if (user) navigate('/');
     }, [user, navigate]);
 
-    const handleLogin = async (credentials) => {
-        try {
-            await login(credentials.username ?? credentials.email ?? credentials, credentials.password);
-            navigate('/');
-        } catch (err) {
-            setError('Invalid username or password');
-        }
-    };
+  const handleLogin = async (credentials) => {
+    try {
+      await login(credentials.username ?? credentials.email ?? credentials, credentials.password);
+      navigate('/');
+    } catch (err) {
+      const msg = (err?.message || 'Invalid username or password').replace(/\s*\(\d+\)$/, '');
+      setError(msg);
+    }
+  };
 
     return (
     <div className='auth-page'>

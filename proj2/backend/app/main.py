@@ -62,6 +62,9 @@ def root():
 
 @app.post("/auth/register", response_model=AuthResponse)
 def register(payload: AuthRequest, session: Session = Depends(get_session)):
+    # Enforce NCSU email domain for registration
+    if not str(payload.email).lower().endswith("@ncsu.edu"):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only NCSU accounts are allowed to register/login")
     existing = session.exec(select(User).where(User.email == payload.email)).first()
     if existing:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User already exists")
@@ -80,6 +83,9 @@ def register(payload: AuthRequest, session: Session = Depends(get_session)):
 
 @app.post("/auth/login", response_model=AuthResponse)
 def login(payload: AuthRequest, session: Session = Depends(get_session)):
+    # Enforce NCSU email domain for login
+    if not str(payload.email).lower().endswith("@ncsu.edu"):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only NCSU accounts are allowed to register/login")
     user = session.exec(select(User).where(User.email == payload.email)).first()
     if not user or not verify_password(payload.password, user.password_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
