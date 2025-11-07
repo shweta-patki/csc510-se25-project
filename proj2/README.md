@@ -151,6 +151,21 @@ Disclaimer
 
 ## 📸 Demo
 https://drive.google.com/file/d/1nYsvlyniUr3Ro5wnOGo4IbAHK5FIFBCo/view?usp=drive_link
+---
+
+## 🎯 Mission Statement
+
+**BrickyardBytes** strives to make campus dining faster, smarter, and more collaborative by creating a **student-powered food-run network**.  
+Our mission is to empower NC State students to **save time, cut delivery costs, and reduce redundant trips** by connecting those already picking up food with others nearby who want to place orders.
+
+We aim to:
+- Foster **community convenience** through shared delivery runs.  
+- Encourage **eco-friendly practices** by minimizing excess travel.  
+- Showcase **student innovation** in solving everyday campus problems.
+
+At its heart, BrickyardBytes is about **efficiency, accessibility, and collaboration** — transforming how students coordinate, order, and share their on-campus dining experience.
+
+---
 
 ## 🐍 FastAPI Backend
 
