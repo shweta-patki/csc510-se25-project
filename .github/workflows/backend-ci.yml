@@ -15,6 +15,8 @@ jobs:
   test:
     name: Backend (Pytest)
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     defaults:
       run:
         working-directory: proj2/backend
@@ -33,6 +35,11 @@ jobs:
           pip install -r requirements.txt
           pip install pytest pytest-cov
 
+      - name: Setup Node.js (for badge generation)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
       - name: Run backend tests with coverage
         env:
           DATABASE_URL: sqlite:///./test.db
@@ -40,12 +47,39 @@ jobs:
           pytest tests -q --maxfail=1 \
             --cov=. --cov-report=xml:coverage.xml --cov-report=term
 
-      - name: Upload coverage to Codecov (backend)
-        if: success()
-        uses: codecov/codecov-action@v4
-        with:
-          files: proj2/backend/coverage.xml
-          flags: backend
-          name: backend-coverage
-          fail_ci_if_error: false
-          verbose: true
+      - name: Generate backend coverage badge
+        run: |
+          # Extract root line-rate and convert to percent
+          RATE=$(grep -oP 'line-rate="\K[0-9.]+' coverage.xml | head -n 1)
+          PCT=$(awk -v r="$RATE" 'BEGIN { printf("%d", r*100) }')
+          echo "Backend coverage: ${PCT}%"
+          COLOR=red
+          if [ "$PCT" -ge 80 ]; then COLOR=green; elif [ "$PCT" -ge 60 ]; then COLOR=orange; fi
+          npx badge-maker --label "Backend Coverage" --message "${PCT}%" --color "$COLOR" --style flat > ../backend-coverage-badge.svg
+
+      - name: Generate overall coverage badge (from frontend + backend)
+        run: |
+          cd ..
+          if [ -f frontend-coverage-badge.svg ]; then
+            FRONT=$(grep -oE ">[0-9]+%<" frontend-coverage-badge.svg | tr -dc '0-9' || true)
+          else
+            FRONT=""
+          fi
+          BACK=$(grep -oE ">[0-9]+%<" backend-coverage-badge.svg | tr -dc '0-9' || true)
+          if [ -z "$FRONT" ]; then FRONT=0; fi
+          if [ -z "$BACK" ]; then BACK=0; fi
+          if [ "$FRONT" -eq 0 ]; then OVERALL=$BACK; else OVERALL=$(( (FRONT + BACK) / 2 )); fi
+          echo "Computed overall coverage: ${OVERALL}% (front=$FRONT, back=$BACK)"
+          COLOR=red
+          if [ "$OVERALL" -ge 80 ]; then COLOR=green; elif [ "$OVERALL" -ge 60 ]; then COLOR=orange; fi
+          npx badge-maker --label "Overall Coverage" --message "${OVERALL}%" --color "$COLOR" --style flat > overall-coverage-badge.svg
+
+      - name: Commit badges (backend/overall) on main
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run: |
+          cd ..
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add backend-coverage-badge.svg overall-coverage-badge.svg
+          git diff --cached --quiet || git commit -m "chore: update backend/overall coverage badge [skip ci]"
+          git push

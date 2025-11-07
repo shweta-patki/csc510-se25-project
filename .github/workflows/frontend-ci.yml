@@ -15,6 +15,8 @@ jobs:
   test:
     name: Frontend (Vitest)
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     defaults:
       run:
         working-directory: proj2/frontend
@@ -30,19 +32,48 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Ensure jq available (for parsing coverage)
+        run: sudo apt-get update && sudo apt-get install -y jq
+
       - name: Run frontend tests with coverage
         run: |
           npx vitest run \
             --coverage.enabled true \
             --coverage.provider=v8 \
-            --coverage.reporters=lcov,html,text
+            --coverage.reporters=json-summary,lcov,html,text
 
-      - name: Upload coverage to Codecov (frontend)
-        if: success()
-        uses: codecov/codecov-action@v4
-        with:
-          files: proj2/frontend/coverage/lcov.info
-          flags: frontend
-          name: frontend-coverage
-          fail_ci_if_error: false
-          verbose: true
+      - name: Generate frontend coverage badge
+        run: |
+          FRONTEND_COVERAGE=$(jq '.total.lines.pct' coverage/coverage-summary.json | xargs printf "%.0f")
+          echo "Frontend coverage: ${FRONTEND_COVERAGE}%"
+          COLOR=red
+          if [ "$FRONTEND_COVERAGE" -ge 80 ]; then COLOR=green; elif [ "$FRONTEND_COVERAGE" -ge 60 ]; then COLOR=orange; fi
+          npx badge-maker --label "Frontend Coverage" --message "${FRONTEND_COVERAGE}%" --color "$COLOR" --style flat > ../frontend-coverage-badge.svg
+
+      - name: Generate overall coverage badge (from frontend + backend)
+        run: |
+          cd ..
+          FRONT=$(grep -oE ">[0-9]+%<" frontend-coverage-badge.svg | tr -dc '0-9' || true)
+          if [ -f backend-coverage-badge.svg ]; then
+            BACK=$(grep -oE ">[0-9]+%<" backend-coverage-badge.svg | tr -dc '0-9' || true)
+          else
+            BACK=""
+          fi
+          if [ -z "$FRONT" ]; then FRONT=0; fi
+          if [ -z "$BACK" ]; then BACK=0; fi
+          if [ "$BACK" -eq 0 ]; then OVERALL=$FRONT; else OVERALL=$(( (FRONT + BACK) / 2 )); fi
+          echo "Computed overall coverage: ${OVERALL}% (front=$FRONT, back=$BACK)"
+          COLOR=red
+          if [ "$OVERALL" -ge 80 ]; then COLOR=green; elif [ "$OVERALL" -ge 60 ]; then COLOR=orange; fi
+          npx badge-maker --label "Overall Coverage" --message "${OVERALL}%" --color "$COLOR" --style flat > overall-coverage-badge.svg
+
+      - name: Commit badges (frontend/overall) on main
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run: |
+          cd ..
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add frontend-coverage-badge.svg overall-coverage-badge.svg
+          git diff --cached --quiet || git commit -m "chore: update frontend/overall coverage badge [skip ci]"
+          git push
+
