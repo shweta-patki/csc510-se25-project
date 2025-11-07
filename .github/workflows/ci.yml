@@ -34,7 +34,6 @@ jobs:
             --coverage.reporters=json-summary,html,text \
             --coverage.exclude='**/node_modules/**'
 
-
       - name: Verify coverage file exists
         run: ls -la coverage || echo "Coverage folder not found!"
 
@@ -48,8 +47,9 @@ jobs:
             COLOR="orange"
           else
             COLOR="red"
-          fi      
-          npx badge-maker --label "Frontend Coverage" --message "${FRONTEND_COVERAGE}%" --color "${COLOR}" --style flat > frontend-coverage-badge.svg
+          fi
+          echo "{\"label\": \"Frontend Coverage\", \"message\": \"${FRONTEND_COVERAGE}%\", \"color\": \"${COLOR}\", \"style\": \"flat\"}" \
+            | npx badge-maker > frontend-coverage-badge.svg
         shell: bash
 
       - name: Upload frontend coverage artifacts
@@ -102,8 +102,10 @@ jobs:
           else
             COLOR="red"
           fi
-          npx badge-maker --label "Backend Coverage" --message "${BACKEND_COVERAGE}%" --color "${COLOR}" --style flat > backend-coverage-badge.svg
+          echo "{\"label\": \"Backend Coverage\", \"message\": \"${BACKEND_COVERAGE}%\", \"color\": \"${COLOR}\", \"style\": \"flat\"}" \
+            | npx badge-maker > backend-coverage-badge.svg
         shell: bash
+
 
       - name: Upload backend coverage artifacts
         if: success()
