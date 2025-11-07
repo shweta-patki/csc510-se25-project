@@ -3,15 +3,15 @@
 > CSC510: Software Engineering, Fall 2025  
 > **Team 5:** Anmol Koul · Arnav Mejari · Om Kumar Singh · Shweta Patki  
 
-BrickyardBytes is a campus-oriented, student-run alternative to Grubhub.  
-Students already getting food from on-campus spots can **broadcast** their run so others can **attach** orders to it — saving time, cost, and reducing delivery load.
+BrickyardBytes is a campus-oriented, student-run alternative to Grubhub's campus ordering program.  
+Students already getting food from on-campus spots can **broadcast** their run so others can **add** their orders to it — saving time, cost, and reducing overall human effort.
 
 ---
 
 ## Badges
 [![CI](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/ci.yml/badge.svg)](https://github.com/<your-username>/csc510-se25-project/actions)
-[![Frontend Coverage](./frontend/coverage-badge.svg)](./frontend/coverage/index.html)
-[![Backend Coverage](./backend/coverage-badge.svg)](./backend/htmlcov/index.html)
+[![Frontend Coverage](./frontend/coverage-badge.svg)]
+[![Backend Coverage](./backend/coverage-badge.svg)]
 [![License: MIT](https://img.shields.io/github/license/shweta-patki/csc510-se25-project.svg)](LICENSE)
 [![DOI](https://zenodo.org/badge/1048575036.svg)](https://doi.org/10.5281/zenodo.17547343)
 
