@@ -1,24 +1,31 @@
 from typing import List, Optional
 from pydantic import BaseModel, EmailStr, Field
 
+
 class AuthRequest(BaseModel):
     email: EmailStr
     password: str
+
 
 class UserOut(BaseModel):
     id: int
     username: str  # maps to email
     points: int
 
+
 class AuthResponse(BaseModel):
     user: UserOut
     token: str
+
 
 class OrderCreate(BaseModel):
     items: str
     # enforce positive amounts for orders
     amount: float = Field(..., gt=0)
-    pin: Optional[str] = None  # optional client-provided PIN; server will generate if missing
+    pin: Optional[str] = (
+        None  # optional client-provided PIN; server will generate if missing
+    )
+
 
 class OrderResponse(BaseModel):
     # Public order details shared with runner and other joiners (no PIN)
@@ -29,6 +36,7 @@ class OrderResponse(BaseModel):
     items: str
     amount: float
     user_email: str
+
 
 class OrderJoinResponse(BaseModel):
     # Response for joining a run; includes the generated PIN for the joiner
@@ -41,6 +49,7 @@ class OrderJoinResponse(BaseModel):
     user_email: str
     pin: str
 
+
 class MyOrderResponse(BaseModel):
     id: int
     run_id: int
@@ -49,11 +58,13 @@ class MyOrderResponse(BaseModel):
     status: str
     pin: str
 
+
 class FoodRunCreate(BaseModel):
     restaurant: str
     drop_point: str
     eta: str
     capacity: int = 5
+
 
 class FoodRunResponse(FoodRunCreate):
     id: int
@@ -63,13 +74,16 @@ class FoodRunResponse(FoodRunCreate):
     seats_remaining: int
     orders: List[OrderResponse] = []
 
+
 class JoinedRunResponse(FoodRunResponse):
     my_order: Optional[MyOrderResponse] = None
+
 
 class PointsResponse(BaseModel):
     points: int
     # represent redeemable value as integer dollars for clarity in API and tests
     points_value: int  # in dollars
+
 
 class PinVerifyRequest(BaseModel):
     pin: str

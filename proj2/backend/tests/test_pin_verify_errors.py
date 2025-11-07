@@ -1,7 +1,9 @@
 from conftest import register_and_login
 
 
-def create_run(client, token, restaurant="Talley One Earth", drop="EBII", capacity=2, eta="12:30"):
+def create_run(
+    client, token, restaurant="Talley One Earth", drop="EBII", capacity=2, eta="12:30"
+):
     payload = {
         "restaurant": restaurant,
         "drop_point": drop,
@@ -14,7 +16,11 @@ def create_run(client, token, restaurant="Talley One Earth", drop="EBII", capaci
 
 
 def join_run(client, token, run_id, items="1x Tea", amount=2.5):
-    return client.post(f"/runs/{run_id}/orders", headers={"Authorization": f"Bearer {token}"}, json={"items": items, "amount": amount})
+    return client.post(
+        f"/runs/{run_id}/orders",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"items": items, "amount": amount},
+    )
 
 
 def test_non_runner_cannot_verify_pin(app_client):
@@ -49,7 +55,10 @@ def test_incorrect_pin_rejected_and_cancelled_not_verifiable(app_client):
     assert rv_wrong.status_code == 400
 
     # cancel order
-    app_client.delete(f"/runs/{run['id']}/orders/me", headers={"Authorization": f"Bearer {user_token}"})
+    app_client.delete(
+        f"/runs/{run['id']}/orders/me",
+        headers={"Authorization": f"Bearer {user_token}"},
+    )
 
     rv_cancel = app_client.post(
         f"/runs/{run['id']}/orders/{j['id']}/verify-pin",

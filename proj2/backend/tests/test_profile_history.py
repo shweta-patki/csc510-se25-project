@@ -1,7 +1,14 @@
 from conftest import register_and_login
 
 
-def create_run(client, token, restaurant="Port City Java EBII", drop="Wolf Village", capacity=2, eta="12:00"):
+def create_run(
+    client,
+    token,
+    restaurant="Port City Java EBII",
+    drop="Wolf Village",
+    capacity=2,
+    eta="12:00",
+):
     payload = {
         "restaurant": restaurant,
         "drop_point": drop,
@@ -14,14 +21,20 @@ def create_run(client, token, restaurant="Port City Java EBII", drop="Wolf Villa
 
 
 def join_run(client, token, run_id, items="1x Coffee", amount=3.5):
-    return client.post(f"/runs/{run_id}/orders", headers={"Authorization": f"Bearer {token}"}, json={"items": items, "amount": amount})
+    return client.post(
+        f"/runs/{run_id}/orders",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"items": items, "amount": amount},
+    )
 
 
 def test_active_run_appears_in_mine(app_client):
     runner_token, _ = register_and_login(app_client, "ph_runner@ncsu.edu")
     run = create_run(app_client, runner_token, capacity=1)
     run_id = run["id"]
-    mine = app_client.get("/runs/mine", headers={"Authorization": f"Bearer {runner_token}"}).json()
+    mine = app_client.get(
+        "/runs/mine", headers={"Authorization": f"Bearer {runner_token}"}
+    ).json()
     assert any(r["id"] == run_id and r["status"] == "active" for r in mine)
 
 
@@ -29,9 +42,13 @@ def test_completed_run_moves_to_runner_history(app_client):
     runner_token, _ = register_and_login(app_client, "ph_runner2@ncsu.edu")
     run = create_run(app_client, runner_token, capacity=1)
     run_id = run["id"]
-    rc = app_client.put(f"/runs/{run_id}/complete", headers={"Authorization": f"Bearer {runner_token}"})
+    rc = app_client.put(
+        f"/runs/{run_id}/complete", headers={"Authorization": f"Bearer {runner_token}"}
+    )
     assert rc.status_code == 200
-    mine_hist = app_client.get("/runs/mine/history", headers={"Authorization": f"Bearer {runner_token}"}).json()
+    mine_hist = app_client.get(
+        "/runs/mine/history", headers={"Authorization": f"Bearer {runner_token}"}
+    ).json()
     assert any(r["id"] == run_id and r["status"] == "completed" for r in mine_hist)
 
 
@@ -42,8 +59,12 @@ def test_completed_run_appears_in_joined_history(app_client):
     run_id = run["id"]
     rj = join_run(app_client, u_token, run_id)
     assert rj.status_code in (200, 201)
-    app_client.put(f"/runs/{run_id}/complete", headers={"Authorization": f"Bearer {runner_token}"})
-    joined_hist = app_client.get("/runs/joined/history", headers={"Authorization": f"Bearer {u_token}"}).json()
+    app_client.put(
+        f"/runs/{run_id}/complete", headers={"Authorization": f"Bearer {runner_token}"}
+    )
+    joined_hist = app_client.get(
+        "/runs/joined/history", headers={"Authorization": f"Bearer {u_token}"}
+    ).json()
     assert any(r["id"] == run_id for r in joined_hist)
 
 
@@ -53,7 +74,10 @@ def test_points_visible_after_completion(app_client):
     run = create_run(app_client, runner_token)
     j = join_run(app_client, u_token, run["id"], amount=30.0)
     assert j.status_code in (200, 201)
-    app_client.put(f"/runs/{run['id']}/complete", headers={"Authorization": f"Bearer {runner_token}"})
+    app_client.put(
+        f"/runs/{run['id']}/complete",
+        headers={"Authorization": f"Bearer {runner_token}"},
+    )
     gp = app_client.get("/points", headers={"Authorization": f"Bearer {runner_token}"})
     assert gp.status_code == 200
     body = gp.json()
@@ -68,9 +92,14 @@ def test_points_rounding_behavior_and_redeem_edges(app_client):
     r1 = create_run(app_client, runner_token)
     j1 = join_run(app_client, u_token, r1["id"], amount=35.0)
     assert j1.status_code in (200, 201)
-    app_client.put(f"/runs/{r1['id']}/complete", headers={"Authorization": f"Bearer {runner_token}"})
+    app_client.put(
+        f"/runs/{r1['id']}/complete",
+        headers={"Authorization": f"Bearer {runner_token}"},
+    )
 
-    gp1 = app_client.get("/points", headers={"Authorization": f"Bearer {runner_token}"}).json()
+    gp1 = app_client.get(
+        "/points", headers={"Authorization": f"Bearer {runner_token}"}
+    ).json()
     assert gp1["points"] == 4
     assert gp1["points_value"] == 0  # < 10 points -> $0 value
 
@@ -78,25 +107,39 @@ def test_points_rounding_behavior_and_redeem_edges(app_client):
     r2 = create_run(app_client, runner_token)
     j2 = join_run(app_client, u_token, r2["id"], amount=30.0)
     assert j2.status_code in (200, 201)
-    app_client.put(f"/runs/{r2['id']}/complete", headers={"Authorization": f"Bearer {runner_token}"})
+    app_client.put(
+        f"/runs/{r2['id']}/complete",
+        headers={"Authorization": f"Bearer {runner_token}"},
+    )
 
-    gp2 = app_client.get("/points", headers={"Authorization": f"Bearer {runner_token}"}).json()
+    gp2 = app_client.get(
+        "/points", headers={"Authorization": f"Bearer {runner_token}"}
+    ).json()
     assert gp2["points"] == 7
     assert gp2["points_value"] == 0
-    rd_fail = app_client.post("/points/redeem", headers={"Authorization": f"Bearer {runner_token}"})
+    rd_fail = app_client.post(
+        "/points/redeem", headers={"Authorization": f"Bearer {runner_token}"}
+    )
     assert rd_fail.status_code == 400
 
     # Add 45.0 -> 4.5 -> round() -> 4 => total 11 -> redeem 10 -> $5 value, 1 remaining
     r3 = create_run(app_client, runner_token)
     j3 = join_run(app_client, u_token, r3["id"], amount=45.0)
     assert j3.status_code in (200, 201)
-    app_client.put(f"/runs/{r3['id']}/complete", headers={"Authorization": f"Bearer {runner_token}"})
+    app_client.put(
+        f"/runs/{r3['id']}/complete",
+        headers={"Authorization": f"Bearer {runner_token}"},
+    )
 
-    gp3 = app_client.get("/points", headers={"Authorization": f"Bearer {runner_token}"}).json()
+    gp3 = app_client.get(
+        "/points", headers={"Authorization": f"Bearer {runner_token}"}
+    ).json()
     assert gp3["points"] == 11
     assert gp3["points_value"] == 5
 
-    rd_ok = app_client.post("/points/redeem", headers={"Authorization": f"Bearer {runner_token}"})
+    rd_ok = app_client.post(
+        "/points/redeem", headers={"Authorization": f"Bearer {runner_token}"}
+    )
     assert rd_ok.status_code == 200
     rd_json = rd_ok.json()
     assert rd_json["points_redeemed"] == 10
@@ -113,8 +156,13 @@ def test_joined_history_includes_my_pin_and_runner_details_hide_pins(app_client)
     assert rj.status_code in (200, 201)
 
     # Joined history contains my_order.pin after completion
-    app_client.put(f"/runs/{run['id']}/complete", headers={"Authorization": f"Bearer {runner_token}"})
-    jhist = app_client.get("/runs/joined/history", headers={"Authorization": f"Bearer {u_token}"}).json()
+    app_client.put(
+        f"/runs/{run['id']}/complete",
+        headers={"Authorization": f"Bearer {runner_token}"},
+    )
+    jhist = app_client.get(
+        "/runs/joined/history", headers={"Authorization": f"Bearer {u_token}"}
+    ).json()
     entry = next(x for x in jhist if x["id"] == run["id"])
     assert entry.get("my_order", {}).get("pin")
 
@@ -123,6 +171,8 @@ def test_joined_history_includes_my_pin_and_runner_details_hide_pins(app_client)
     u2_token, _ = register_and_login(app_client, "privuser2@ncsu.edu")
     join_run(app_client, u_token, run2["id"], amount=5.0)
     join_run(app_client, u2_token, run2["id"], amount=6.0)
-    details = app_client.get(f"/runs/id/{run2['id']}", headers={"Authorization": f"Bearer {runner_token}"}).json()
+    details = app_client.get(
+        f"/runs/id/{run2['id']}", headers={"Authorization": f"Bearer {runner_token}"}
+    ).json()
     for o in details.get("orders", []):
         assert "pin" not in o

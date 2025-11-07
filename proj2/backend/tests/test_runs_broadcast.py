@@ -1,7 +1,14 @@
 from conftest import register_and_login
 
 
-def create_run(client, token, restaurant="Common Grounds Cafe Hunt Library", drop="EBII", capacity=2, eta="11:00"):
+def create_run(
+    client,
+    token,
+    restaurant="Common Grounds Cafe Hunt Library",
+    drop="EBII",
+    capacity=2,
+    eta="11:00",
+):
     payload = {
         "restaurant": restaurant,
         "drop_point": drop,
@@ -14,7 +21,11 @@ def create_run(client, token, restaurant="Common Grounds Cafe Hunt Library", dro
 
 
 def join_run(client, token, run_id, items="1x Coffee", amount=3.5):
-    return client.post(f"/runs/{run_id}/orders", headers={"Authorization": f"Bearer {token}"}, json={"items": items, "amount": amount})
+    return client.post(
+        f"/runs/{run_id}/orders",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"items": items, "amount": amount},
+    )
 
 
 def test_new_broadcast_visible_to_other_users(app_client):
@@ -24,7 +35,9 @@ def test_new_broadcast_visible_to_other_users(app_client):
     run = create_run(app_client, runner_token, capacity=1)
     run_id = run["id"]
 
-    r_av = app_client.get("/runs/available", headers={"Authorization": f"Bearer {other_token}"})
+    r_av = app_client.get(
+        "/runs/available", headers={"Authorization": f"Bearer {other_token}"}
+    )
     assert any(r["id"] == run_id for r in r_av.json())
 
 
@@ -37,7 +50,9 @@ def test_broadcast_removed_from_available_when_full(app_client):
     rj = join_run(app_client, other_token, run_id, items="2x Latte", amount=8.0)
     assert rj.status_code in (200, 201)
 
-    r_av2 = app_client.get("/runs/available", headers={"Authorization": f"Bearer {other_token}"})
+    r_av2 = app_client.get(
+        "/runs/available", headers={"Authorization": f"Bearer {other_token}"}
+    )
     assert all(r["id"] != run_id for r in r_av2.json())
 
 
@@ -65,14 +80,20 @@ def test_runner_can_verify_pin_and_mark_delivered(app_client):
 def test_runner_can_complete_run(app_client):
     runner_token, _ = register_and_login(app_client, "crunner@ncsu.edu")
     run = create_run(app_client, runner_token, capacity=1)
-    rc = app_client.put(f"/runs/{run['id']}/complete", headers={"Authorization": f"Bearer {runner_token}"})
+    rc = app_client.put(
+        f"/runs/{run['id']}/complete",
+        headers={"Authorization": f"Bearer {runner_token}"},
+    )
     assert rc.status_code == 200
 
 
 def test_runner_can_cancel_run(app_client):
     runner_token, _ = register_and_login(app_client, "canrunner@ncsu.edu")
     run2 = create_run(app_client, runner_token, capacity=1)
-    rcancel = app_client.put(f"/runs/{run2['id']}/cancel", headers={"Authorization": f"Bearer {runner_token}"})
+    rcancel = app_client.put(
+        f"/runs/{run2['id']}/cancel",
+        headers={"Authorization": f"Bearer {runner_token}"},
+    )
     assert rcancel.status_code == 200
 
 
@@ -81,7 +102,9 @@ def test_cannot_join_after_complete(app_client):
     u_token, _ = register_and_login(app_client, "closeuser@ncsu.edu")
     run = create_run(app_client, runner_token, capacity=2)
     rid = run["id"]
-    app_client.put(f"/runs/{rid}/complete", headers={"Authorization": f"Bearer {runner_token}"})
+    app_client.put(
+        f"/runs/{rid}/complete", headers={"Authorization": f"Bearer {runner_token}"}
+    )
     rj1 = join_run(app_client, u_token, rid)
     assert rj1.status_code == 400
 
@@ -91,6 +114,8 @@ def test_cannot_join_after_cancel(app_client):
     u_token, _ = register_and_login(app_client, "closeuser2@ncsu.edu")
     run2 = create_run(app_client, runner_token, capacity=2)
     rid2 = run2["id"]
-    app_client.put(f"/runs/{rid2}/cancel", headers={"Authorization": f"Bearer {runner_token}"})
+    app_client.put(
+        f"/runs/{rid2}/cancel", headers={"Authorization": f"Bearer {runner_token}"}
+    )
     rj2 = join_run(app_client, u_token, rid2)
     assert rj2.status_code == 400
