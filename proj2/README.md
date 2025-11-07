@@ -1,9 +1,9 @@
-# 🏃‍♂️ BrickYard Bites (Name WIP)
+# 🏃‍♂️ BrickyardBytes
 
 > CSC510: Software Engineering, Fall 2025  
 > **Team 5:** Anmol Koul · Arnav Mejari · Om Kumar Singh · Shweta Patki  
 
-BrickYard Bites is a campus-oriented, student-run alternative to Grubhub.  
+BrickyardBytes is a campus-oriented, student-run alternative to Grubhub.  
 Students already getting food from on-campus spots can **broadcast** their run so others can **attach** orders to it — saving time, cost, and reducing delivery load.
 
 ---
@@ -107,6 +107,22 @@ npx vitest run --coverage
 - 🧪 Vitest
 
 ---
+## 🆔 Identity and naming
+
+- Project name: BrickyardBytes
+- Decision date: 2025-11-06
+
+Uniqueness checks (completed 2025-11-06)
+- No exact-name conflicts found in basic registry searches (GitHub, npm, PyPI, Docker Hub)
+
+Trademark checks (completed 2025-11-06)
+- USPTO TESS: no exact-name matches found for “BrickyardBytes”; no confusingly similar marks observed in IC 9 and 42 based on a basic search (non‑legal review)
+- Campus marks: we avoid using NC State proprietary names/marks (e.g., Wolfpack, Tuffy, Talley, Brickyard) as brand identifiers; our name does not imply affiliation
+
+Disclaimer
+- This project is for educational purposes and is not affiliated with or endorsed by North Carolina State University. All trademarks and campus names remain the property of their respective owners.
+
+---
 ## 📦 Release History
 
 - **v0.4.1** – Enhanced Food Run logic and added GitHub Actions CI workflow  
@@ -118,8 +134,8 @@ npx vitest run --coverage
 
 ---
 
-## 📸 Demo (coming soon)
-`<iframe src="https://www.youtube.com/embed/XXXXX" width="560" height="315"></iframe>`
+## 📸 Demo
+https://drive.google.com/file/d/1nYsvlyniUr3Ro5wnOGo4IbAHK5FIFBCo/view?usp=drive_link
 
 ## 🐍 FastAPI Backend
 
