@@ -8,6 +8,15 @@ Students already getting food from on-campus spots can **broadcast** their run s
 
 ---
 
+## Badges
+[![CI](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/ci.yml/badge.svg)](https://github.com/<your-username>/csc510-se25-project/actions)
+[![Frontend Coverage](./frontend/coverage-badge.svg)](./frontend/coverage/index.html)
+[![Backend Coverage](./backend/coverage-badge.svg)](./backend/htmlcov/index.html)
+[![License: MIT](https://img.shields.io/github/license/shweta-patki/csc510-se25-project.svg)](LICENSE)
+[![DOI](https://zenodo.org/badge/1048575036.svg)](https://doi.org/10.5281/zenodo.17547343)
+
+---
+
 ## 🗂️ Folder Structure
 ```
 proj2/
@@ -223,15 +232,6 @@ VITE_API_BASE=http://localhost:5050
 - 405 Method Not Allowed when browsing /auth/register: it’s POST-only—use the form or Swagger UI.
 - Port 5000 access denied on Windows: use an alternate port like 5050 (update frontend `.env`).
 - PowerShell cannot activate venv: use `.\.venv\Scripts\python.exe -m uvicorn ...` or `Set-ExecutionPolicy -Scope Process Bypass` temporarily.
-
----
-
-## 🛠️ Badges
-
-[![CI Tests](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/ci.yml/badge.svg)](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/ci.yml)  
-![Frontend Coverage](frontend/frontend-coverage-badge.svg)  
-![Backend Coverage](backend/backend-coverage-badge.svg)  
-![License](https://img.shields.io/github/license/shweta-patki/csc510-se25-project)
 
 
 ---
