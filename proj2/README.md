@@ -1,4 +1,4 @@
-# 🏃🏾 BrickyardBytes
+# 🏃🏾 BrickyardBytes 🏃🏻
 
 > CSC510: Software Engineering, Fall 2025  
 > **Team 5:** Anmol Koul · Arnav Mejari · Om Kumar Singh · Shweta Patki  
