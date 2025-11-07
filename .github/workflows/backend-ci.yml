@@ -11,6 +11,10 @@ on:
     paths:
       - 'proj2/backend/**'
 
+concurrency:
+  group: coverage-badges-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   test:
     name: Backend (Pytest)
@@ -81,5 +85,14 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add backend-coverage-badge.svg overall-coverage-badge.svg
-          git diff --cached --quiet || git commit -m "chore: update backend/overall coverage badge [skip ci]"
-          git push
+          if git diff --cached --quiet; then
+            echo "No badge changes to commit."
+          else
+            git commit -m "chore: update backend/overall coverage badge [skip ci]"
+            # Rebase to avoid non-fast-forward errors if main moved
+            for i in 1 2 3; do
+              git pull --rebase origin main && git push && break || {
+                echo "Retry $i: rebase/push failed, retrying in 3s"; sleep 3;
+              }
+            done
+          fi
