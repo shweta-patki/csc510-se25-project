@@ -1,0 +1,35 @@
+name: Frontend CI
+
+on:
+  push:
+    paths:
+      - 'frontend/**'
+  pull_request:
+    paths:
+      - 'frontend/**'
+
+jobs:
+  test-and-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+      - name: Lint (ESLint)
+        run: |
+          cd frontend
+          npm run lint
+      - name: Run tests (Vitest) + coverage
+        run: |
+          cd frontend
+          npx vitest run --coverage
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          fail_ci_if_error: true

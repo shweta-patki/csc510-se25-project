@@ -9,9 +9,11 @@ Students already getting food from on-campus spots can **broadcast** their run s
 ---
 
 ## Badges
-[![CI](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/ci.yml/badge.svg)](https://github.com/<your-username>/csc510-se25-project/actions)
-[![Frontend Coverage](./frontend/coverage-badge.svg)](./frontend/coverage/index.html)
-[![Backend Coverage](./backend/coverage-badge.svg)](./backend/htmlcov/index.html)
+[![Run proj2 Tests on Merge to Main](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/ci.yml/badge.svg)](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/ci.yml)
+[![ESLint](https://img.shields.io/badge/lint-ESLint-blue?logo=eslint)](frontend/.eslintrc.cjs)
+[![Prettier](https://img.shields.io/badge/format-Prettier-%23f7b93e?logo=prettier)](frontend/.prettierrc)
+[![Black](https://img.shields.io/badge/format-Black-000000?logo=python)](backend/pyproject.toml)
+[![Flake8](https://img.shields.io/badge/lint-Flake8-4b8bbe?logo=python)](backend/.flake8)
 [![License: MIT](https://img.shields.io/github/license/shweta-patki/csc510-se25-project.svg)](LICENSE)
 [![DOI](https://zenodo.org/badge/1048575036.svg)](https://doi.org/10.5281/zenodo.17547343)
 
