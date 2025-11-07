@@ -49,9 +49,8 @@ jobs:
             COLOR="red"
           fi
           echo "{\"label\": \"Frontend Coverage\", \"message\": \"${FRONTEND_COVERAGE}%\", \"color\": \"${COLOR}\", \"style\": \"flat\"}" \
-            | npx badge-maker > frontend-coverage-badge.svg
+            | npx --yes @badge-maker/badge-maker > frontend-coverage-badge.svg
         shell: bash
-
 
       - name: Upload frontend coverage artifacts
         if: success()
@@ -104,7 +103,7 @@ jobs:
             COLOR="red"
           fi
           echo "{\"label\": \"Backend Coverage\", \"message\": \"${BACKEND_COVERAGE}%\", \"color\": \"${COLOR}\", \"style\": \"flat\"}" \
-            | npx badge-maker > backend-coverage-badge.svg
+            | npx --yes @badge-maker/badge-maker > backend-coverage-badge.svg
         shell: bash
 
       - name: Upload backend coverage artifacts
