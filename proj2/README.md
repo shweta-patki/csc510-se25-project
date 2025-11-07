@@ -9,23 +9,18 @@ Students already getting food from on-campus spots can **broadcast** their run s
 ---
 
 ## Badges
-<!-- Showing only coverage percentage badges as requested -->
-[![Coverage](https://codecov.io/gh/shweta-patki/csc510-se25-project/branch/main/graph/badge.svg)](https://app.codecov.io/gh/shweta-patki/csc510-se25-project)
-[![Frontend Coverage](https://codecov.io/gh/shweta-patki/csc510-se25-project/branch/main/graph/badge.svg?flag=frontend)](https://app.codecov.io/gh/shweta-patki/csc510-se25-project/tree/main/proj2/frontend)
-[![Backend Coverage](https://codecov.io/gh/shweta-patki/csc510-se25-project/branch/main/graph/badge.svg?flag=backend)](https://app.codecov.io/gh/shweta-patki/csc510-se25-project/tree/main/proj2/backend)
-
-<!-- Other badges retained for future use; uncomment if needed
 [![Run proj2 Tests on Merge to Main](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/ci.yml/badge.svg)](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/ci.yml)
 [![Frontend CI](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/frontend-ci.yml/badge.svg)](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/frontend-ci.yml)
 [![Backend CI](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/backend-ci.yml)
+[![Coverage](https://codecov.io/gh/shweta-patki/csc510-se25-project/branch/main/graph/badge.svg)](https://app.codecov.io/gh/shweta-patki/csc510-se25-project)
+[![Frontend Coverage](https://codecov.io/gh/shweta-patki/csc510-se25-project/branch/main/graph/badge.svg?flag=frontend)](https://app.codecov.io/gh/shweta-patki/csc510-se25-project/tree/main/proj2/frontend)
+[![Backend Coverage](https://codecov.io/gh/shweta-patki/csc510-se25-project/branch/main/graph/badge.svg?flag=backend)](https://app.codecov.io/gh/shweta-patki/csc510-se25-project/tree/main/proj2/backend)
 [![ESLint](https://img.shields.io/badge/lint-ESLint-blue?logo=eslint)](frontend/.eslintrc.cjs)
 [![Prettier](https://img.shields.io/badge/format-Prettier-%23f7b93e?logo=prettier)](frontend/.prettierrc)
 [![Black](https://img.shields.io/badge/format-Black-000000?logo=python)](backend/pyproject.toml)
 [![Flake8](https://img.shields.io/badge/lint-Flake8-4b8bbe?logo=python)](backend/.flake8)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/shweta-patki/csc510-se25-project/blob/main/LICENSE)
 [![DOI](https://zenodo.org/badge/1048575036.svg)](https://doi.org/10.5281/zenodo.17547343)
--->
-
 ---
 
 ## 🗂️ Folder Structure
