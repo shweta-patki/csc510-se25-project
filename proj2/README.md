@@ -132,7 +132,7 @@ Uniqueness checks (completed 2025-11-06)
 
 Trademark checks (completed 2025-11-06)
 - USPTO TESS: no exact-name matches found for “BrickyardBytes”; no confusingly similar marks observed in IC 9 and 42 based on a basic search (non‑legal review)
-- Campus marks: we avoid using NC State proprietary names/marks (e.g., Wolfpack, Tuffy, Talley, Brickyard) as brand identifiers; our name does not imply affiliation
+- Campus marks: we avoid using NC State proprietary names/marks (e.g., Wolfpack, Tuffy, Talley) as brand identifiers; our name does not imply affiliation
 
 Disclaimer
 - This project is for educational purposes and is not affiliated with or endorsed by North Carolina State University. All trademarks and campus names remain the property of their respective owners.
