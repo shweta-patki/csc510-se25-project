@@ -1,5 +1,5 @@
 from typing import List, Optional
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 class AuthRequest(BaseModel):
     email: EmailStr
@@ -16,7 +16,8 @@ class AuthResponse(BaseModel):
 
 class OrderCreate(BaseModel):
     items: str
-    amount: float
+    # enforce positive amounts for orders
+    amount: float = Field(..., gt=0)
     pin: Optional[str] = None  # optional client-provided PIN; server will generate if missing
 
 class OrderResponse(BaseModel):
@@ -67,7 +68,8 @@ class JoinedRunResponse(FoodRunResponse):
 
 class PointsResponse(BaseModel):
     points: int
-    points_value: float  # in dollars
+    # represent redeemable value as integer dollars for clarity in API and tests
+    points_value: int  # in dollars
 
 class PinVerifyRequest(BaseModel):
     pin: str
