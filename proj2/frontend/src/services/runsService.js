@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5050';
 
 function getAuth() {
   try { return JSON.parse(localStorage.getItem('auth')); } catch { return null; }
@@ -90,5 +90,12 @@ export async function verifyOrderPin(runId, orderId, pin) {
   return fetchWithAuth(`/runs/${runId}/orders/${orderId}/verify-pin`, {
     method: 'POST',
     body: JSON.stringify({ pin })
+  });
+}
+
+export async function getRunDescriptionSuggestion({ restaurant, drop_point, eta }) {
+  return fetchWithAuth('/ai/run-description', {
+    method: 'POST',
+    body: JSON.stringify({ restaurant, drop_point, eta })
   });
 }
