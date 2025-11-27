@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import restaurantsData from "./restaurants.json";
-import { createRun } from "../services/runsService";
+import { createRun, getRunDescriptionSuggestion } from "../services/runsService";
 
 export default function Broadcast() {
   /* Broadcast page component
@@ -15,6 +15,9 @@ export default function Broadcast() {
   const [capacity, setCapacity] = useState(5);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [suggestion, setSuggestion] = useState("");
+  const [suggestionError, setSuggestionError] = useState("");
+  const [suggestionLoading, setSuggestionLoading] = useState(false);
 
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -40,12 +43,35 @@ export default function Broadcast() {
       setEta("");
       setDropPoint("");
       setCapacity(5);
+      setSuggestion("");
+      setSuggestionError("");
       alert("Run broadcasted successfully!");
       navigate("/your-runs");
     } catch (e) {
       setError(e.message || "Failed to broadcast run");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSuggestDescription = async () => {
+    if (!restaurant || !dropPoint || !eta) {
+      setSuggestionError("Select a restaurant, drop point, and ETA to generate a blurb.");
+      return;
+    }
+    setSuggestionError("");
+    setSuggestionLoading(true);
+    try {
+      const res = await getRunDescriptionSuggestion({
+        restaurant,
+        drop_point: dropPoint,
+        eta,
+      });
+      setSuggestion(res?.suggestion || "");
+    } catch (e) {
+      setSuggestionError(e.message || "Unable to fetch a suggestion.");
+    } finally {
+      setSuggestionLoading(false);
     }
   };
 
@@ -103,6 +129,26 @@ export default function Broadcast() {
               onChange={(e) => setCapacity(Number(e.target.value))}
               min="1"
             />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="ai-suggestion">Need a quick description?</label>
+            <div className="ai-suggestion-row">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={handleSuggestDescription}
+                disabled={suggestionLoading}
+              >
+                {suggestionLoading ? "Generating..." : "Smart Suggest description"}
+              </button>
+            </div>
+            {suggestion && (
+              <p id="ai-suggestion" className="ai-suggestion">
+                {suggestion}
+              </p>
+            )}
+            {suggestionError && <p className="form-error">{suggestionError}</p>}
           </div>
 
           {error && <p className="form-error">{error}</p>}

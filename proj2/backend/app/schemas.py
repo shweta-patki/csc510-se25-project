@@ -87,3 +87,13 @@ class PointsResponse(BaseModel):
 
 class PinVerifyRequest(BaseModel):
     pin: str
+
+
+class RunDescriptionRequest(BaseModel):
+    restaurant: str
+    drop_point: str
+    eta: str
+
+
+class RunDescriptionResponse(BaseModel):
+    suggestion: str

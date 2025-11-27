@@ -5,6 +5,7 @@ import { createRun } from "../services/runsService";
 
 vi.mock("../services/runsService", () => ({
   createRun: vi.fn(),
+  getRunDescriptionSuggestion: vi.fn(),
 }));
 
 const mockNavigate = vi.fn();

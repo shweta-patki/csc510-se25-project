@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session, select
 from sqlalchemy.exc import IntegrityError
 from contextlib import asynccontextmanager
+import httpx
 
 from .db import (
     create_db_and_tables,
@@ -27,6 +28,8 @@ from .schemas import (
     OrderJoinResponse,
     PointsResponse,
     PinVerifyRequest,
+    RunDescriptionRequest,
+    RunDescriptionResponse,
 )
 from .auth import (
     get_password_hash,
@@ -36,6 +39,17 @@ from .auth import (
 )
 
 load_dotenv()
+
+
+def build_default_run_description(restaurant: str, drop_point: str, eta: str) -> str:
+    """Fallback copy when AI is unavailable."""
+    restaurant_text = restaurant.strip() if restaurant else "the dining hall"
+    drop_text = drop_point.strip() if drop_point else "the usual spot"
+    eta_text = eta.strip() if eta else "soon"
+    return (
+        f"Heading to {restaurant_text} around {eta_text}; "
+        f"meet me at {drop_text} if you want me to grab something."
+    )
 
 
 @asynccontextmanager
@@ -66,6 +80,67 @@ app.add_middleware(
 @app.get("/")
 def root():
     return {"status": "ok"}
+
+
+@app.post("/ai/run-description", response_model=RunDescriptionResponse)
+def generate_run_description(
+    payload: RunDescriptionRequest, claims=Depends(get_current_user_claims)
+):
+    # require auth but we only need the fact that the token was valid
+    _ = claims
+    default_suggestion = build_default_run_description(
+        payload.restaurant, payload.drop_point, payload.eta
+    )
+    api_key = os.getenv("AI_RUN_DESC_KEY")
+    api_url = os.getenv(
+        "AI_RUN_DESC_URL", "https://api.openai.com/v1/chat/completions"
+    )
+    model = os.getenv("AI_RUN_DESC_MODEL", "gpt-4o-mini")
+    if not api_key:
+        return {"suggestion": default_suggestion}
+    try:
+        response = httpx.post(
+            api_url,
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "model": model,
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": "You create short, friendly, single-sentence blurbs advertising a campus food run.",
+                    },
+                    {
+                        "role": "user",
+                        "content": (
+                            "Write a concise (<=25 words) invitation for this run:\n"
+                            f"Restaurant: {payload.restaurant}\n"
+                            f"Drop point: {payload.drop_point}\n"
+                            f"ETA: {payload.eta}"
+                        ),
+                    },
+                ],
+                "temperature": 0.4,
+                "max_tokens": 80,
+            },
+            timeout=10,
+        )
+        response.raise_for_status()
+        data = response.json()
+        suggestion = (
+            data.get("choices", [{}])[0]
+            .get("message", {})
+            .get("content", "")
+            .strip()
+        )
+        if not suggestion:
+            raise ValueError("Empty AI response")
+        return {"suggestion": suggestion}
+    except Exception:
+        # gracefully fallback to deterministic copy
+        return {"suggestion": default_suggestion}
 
 
 @app.post("/auth/register", response_model=AuthResponse)
