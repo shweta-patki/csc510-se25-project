@@ -12,7 +12,6 @@ Students already getting food from on-campus spots can **broadcast** their run s
 [![Run proj2 Tests on Merge to Main](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/ci.yml/badge.svg)](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/ci.yml)
 [![Frontend CI](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/frontend-ci.yml/badge.svg)](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/frontend-ci.yml)
 [![Backend CI](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/backend-ci.yml)
-[![codecov](https://codecov.io/gh/rishitharamesh/wolfcafeplus/branch/main/graph/badge.svg)](https://codecov.io/gh/rishitharamesh/wolfcafeplus)
 [![codecov](https://codecov.io/gh/rishitharamesh/BrickyardBytes/branch/main/graph/badge.svg)](https://codecov.io/gh/rishitharamesh/BrickyardBytes)
 ![React](https://img.shields.io/badge/React-19.2.0-61dafb?logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-4.0-646cff?logo=vite&logoColor=white)
