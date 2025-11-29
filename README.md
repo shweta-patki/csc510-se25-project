@@ -1,7 +1,7 @@
 # 🏃🏾 BrickyardBytes 🏃🏻
 
 > CSC510: Software Engineering, Fall 2025  
-> **Team 5:** Anmol Koul · Arnav Mejari · Om Kumar Singh · Shweta Patki  
+> **Team 16:** Rishitha Ramesh · Rujuta Budke · Dhruva Kamble
 
 BrickyardBytes is a campus-oriented, student-run alternative to Grubhub's campus ordering program.  
 Students already getting food from on-campus spots can **broadcast** their run so others can **add** their orders to it — saving time, cost, and reducing overall human effort.
@@ -12,9 +12,10 @@ Students already getting food from on-campus spots can **broadcast** their run s
 [![Run proj2 Tests on Merge to Main](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/ci.yml/badge.svg)](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/ci.yml)
 [![Frontend CI](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/frontend-ci.yml/badge.svg)](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/frontend-ci.yml)
 [![Backend CI](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/backend-ci.yml)
-![Overall Coverage](./overall-coverage-badge.svg)
-![Frontend Coverage](./frontend-coverage-badge.svg)
-![Backend Coverage](./backend-coverage-badge.svg)
+[![codecov](https://codecov.io/gh/rishitharamesh/BrickyardBytes/branch/main/graph/badge.svg)](https://codecov.io/gh/rishitharamesh/BrickyardBytes)
+![React](https://img.shields.io/badge/React-19.2.0-61dafb?logo=react&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-4.0-646cff?logo=vite&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-0.28.0-6DA83F?logo=vitest&logoColor=white)
 [![ESLint](https://img.shields.io/badge/lint-ESLint-blue?logo=eslint)](frontend/.eslintrc.cjs)
 [![Prettier](https://img.shields.io/badge/format-Prettier-%23f7b93e?logo=prettier)](frontend/.prettierrc)
 [![Black](https://img.shields.io/badge/format-Black-000000?logo=python)](backend/pyproject.toml)
