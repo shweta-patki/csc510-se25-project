@@ -78,6 +78,13 @@ pip install -r requirements.txt
 copy .env.example .env   # or: cp .env.example .env
 uvicorn app.main:app --port 5050
 ```
+cd BrickyardBytes/proj2/backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+uvicorn app.main:app --port 5050
+
 API will be at http://localhost:5050 (docs: http://localhost:5050/docs)
 
 Frontend env (proj2/frontend/.env)
@@ -242,10 +249,15 @@ VITE_API_BASE=http://localhost:5050
 - Restart Vite dev server, register or login, and you should be redirected to Home.
 
 ### Notes
-- Database: SQLite file `dev.db` (auto-created). Delete it to reset users.
-- Password hashing uses PBKDF2-SHA256 (cross-platform). If you switch to bcrypt on Windows, pin a compatible bcrypt version.
-- CORS: set `CORS_ORIGINS` in backend `.env` to include your Vite origin(s), e.g. `http://localhost:5173,http://127.0.0.1:5173`.
-- For production: switch `DATABASE_URL` to Postgres, rotate `SECRET_KEY`, add rate limiting & validations, and prefer HTTP-only cookies for tokens.
+ - Database: SQLite file `dev.db` (auto-created). Delete it to reset users.
+ - Password hashing uses PBKDF2-SHA256 (cross-platform). If you switch to bcrypt on Windows, pin a compatible bcrypt version.
+ - CORS: set `CORS_ORIGINS` in backend `.env` to include your Vite origin(s), e.g. `http://localhost:5173,http://127.0.0.1:5173`.
+ - For production: switch `DATABASE_URL` to Postgres, rotate `SECRET_KEY`, add rate limiting & validations, and prefer HTTP-only cookies for tokens.
+
+### AI run descriptions
+- The backend exposes `POST /ai/run-description`, which takes `{ restaurant, drop_point, eta }` and returns `{ suggestion }`.
+- Configure `.env` with an OpenAI-compatible endpoint (defaults shown in `.env.example`): set `AI_RUN_DESC_KEY` to your API key, and optionally override `AI_RUN_DESC_URL` and `AI_RUN_DESC_MODEL`.
+- If keys are missing or the provider fails, the API falls back to a deterministic, non-AI string so the UI still shows helpful copy.
 
 ### Troubleshooting
 - Vite error about Node version: install Node 20.19+ or 22.12+.
