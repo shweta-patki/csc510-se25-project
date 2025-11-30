@@ -1,7 +1,7 @@
 # 🏃🏾 BrickyardBytes 🏃🏻
 
 > CSC510: Software Engineering, Fall 2025  
-> **Team 5:** Anmol Koul · Arnav Mejari · Om Kumar Singh · Shweta Patki  
+> **Team 16:** Rishitha Ramesh · Rujuta Budke · Dhruva Kamble
 
 BrickyardBytes is a campus-oriented, student-run alternative to Grubhub's campus ordering program.  
 Students already getting food from on-campus spots can **broadcast** their run so others can **add** their orders to it — saving time, cost, and reducing overall human effort.
@@ -9,19 +9,19 @@ Students already getting food from on-campus spots can **broadcast** their run s
 ---
 
 ## Badges
+[![DOI](https://zenodo.org/badge/1048575036.svg)](https://doi.org/10.5281/zenodo.17547343)
 [![Run proj2 Tests on Merge to Main](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/ci.yml/badge.svg)](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/ci.yml)
 [![Frontend CI](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/frontend-ci.yml/badge.svg)](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/frontend-ci.yml)
 [![Backend CI](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/shweta-patki/csc510-se25-project/actions/workflows/backend-ci.yml)
-![Overall Coverage](./overall-coverage-badge.svg)
-![Frontend Coverage](./frontend-coverage-badge.svg)
-![Backend Coverage](./backend-coverage-badge.svg)
+[![codecov](https://codecov.io/gh/rishitharamesh/BrickyardBytes/branch/main/graph/badge.svg)](https://codecov.io/gh/rishitharamesh/BrickyardBytes)
+![React](https://img.shields.io/badge/React-19.2.0-61dafb?logo=react&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-4.0-646cff?logo=vite&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-0.28.0-6DA83F?logo=vitest&logoColor=white)
 [![ESLint](https://img.shields.io/badge/lint-ESLint-blue?logo=eslint)](frontend/.eslintrc.cjs)
 [![Prettier](https://img.shields.io/badge/format-Prettier-%23f7b93e?logo=prettier)](frontend/.prettierrc)
 [![Black](https://img.shields.io/badge/format-Black-000000?logo=python)](backend/pyproject.toml)
 [![Flake8](https://img.shields.io/badge/lint-Flake8-4b8bbe?logo=python)](backend/.flake8)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/shweta-patki/csc510-se25-project/blob/main/LICENSE)
-[![DOI](https://zenodo.org/badge/1048575036.svg)](https://doi.org/10.5281/zenodo.17547343)
----
 
 ## 🗂️ Folder Structure
 ```
@@ -40,14 +40,14 @@ proj2/
 │       ├── routes/
 │       └── services/
 └── backend/
-	├── requirements.txt
-	├── .env.example
-	└── app/
-		├── main.py
-		├── auth.py
-		├── db.py
-		├── models.py
-		└── schemas.py
+    ├── requirements.txt
+    ├── .env.example
+    └── app/
+        ├── main.py
+        ├── auth.py
+        ├── db.py
+        ├── models.py
+        └── schemas.py
 ```
 
 ## 🚀 Quick Start (Frontend + Backend)
@@ -78,6 +78,13 @@ pip install -r requirements.txt
 copy .env.example .env   # or: cp .env.example .env
 uvicorn app.main:app --port 5050
 ```
+cd BrickyardBytes/proj2/backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+uvicorn app.main:app --port 5050
+
 API will be at http://localhost:5050 (docs: http://localhost:5050/docs)
 
 Frontend env (proj2/frontend/.env)
@@ -207,30 +214,30 @@ API available at http://localhost:5050 (docs at /docs)
 
 ### Endpoints
 - Auth
-	- POST /auth/register { email, password } -> { user: { id, username, points }, token }
-	- POST /auth/login { email, password } -> { user: { id, username, points }, token }
-	- GET  /auth/me (Bearer) -> { id, username, points }
+    - POST /auth/register { email, password } -> { user: { id, username, points }, token }
+    - POST /auth/login { email, password } -> { user: { id, username, points }, token }
+    - GET  /auth/me (Bearer) -> { id, username, points }
 
 - Runs (Bearer)
-	- POST /runs { restaurant, drop_point, eta, capacity? } -> FoodRunResponse
-	- GET  /runs -> [FoodRunResponse]
-	- GET  /runs/available -> other users’ active runs with seats_remaining > 0
-	- GET  /runs/joined -> runs you have joined
-	- GET  /runs/mine -> runs created by you
-	- GET  /runs/joined/history -> joined runs that are completed/cancelled
-	- GET  /runs/mine/history -> your runs that are completed/cancelled
-	- POST /runs/{run_id}/orders { items, amount } -> OrderResponse (join a run)
-	- DELETE /runs/{run_id}/orders/me -> cancel your order (unjoin)
-	- DELETE /runs/{run_id}/orders/{order_id} -> runner removes a user's order
-	- PUT /runs/{run_id}/complete -> mark run completed and award points
-	- PUT /runs/{run_id}/cancel -> cancel your run
+    - POST /runs { restaurant, drop_point, eta, capacity? } -> FoodRunResponse
+    - GET  /runs -> [FoodRunResponse]
+    - GET  /runs/available -> other users’ active runs with seats_remaining > 0
+    - GET  /runs/joined -> runs you have joined
+    - GET  /runs/mine -> runs created by you
+    - GET  /runs/joined/history -> joined runs that are completed/cancelled
+    - GET  /runs/mine/history -> your runs that are completed/cancelled
+    - POST /runs/{run_id}/orders { items, amount } -> OrderResponse (join a run)
+    - DELETE /runs/{run_id}/orders/me -> cancel your order (unjoin)
+    - DELETE /runs/{run_id}/orders/{order_id} -> runner removes a user's order
+    - PUT /runs/{run_id}/complete -> mark run completed and award points
+    - PUT /runs/{run_id}/cancel -> cancel your run
 
-	FoodRunResponse includes: id, runner_id, runner_username, restaurant, drop_point, eta, capacity, status, seats_remaining, orders (in /runs/mine)
-	OrderResponse: id, run_id, user_id, status, items, amount, user_email
+    FoodRunResponse includes: id, runner_id, runner_username, restaurant, drop_point, eta, capacity, status, seats_remaining, orders (in /runs/mine)
+    OrderResponse: id, run_id, user_id, status, items, amount, user_email
 
 - Points (Bearer)
-	- GET  /points -> { points, points_value }
-	- POST /points/redeem -> redeem in $5 per 10 points increments
+    - GET  /points -> { points, points_value }
+    - POST /points/redeem -> redeem in $5 per 10 points increments
 
 ### Frontend integration
 - In `proj2/frontend`, create `.env` with:
@@ -242,16 +249,21 @@ VITE_API_BASE=http://localhost:5050
 - Restart Vite dev server, register or login, and you should be redirected to Home.
 
 ### Notes
-- Database: SQLite file `dev.db` (auto-created). Delete it to reset users.
-- Password hashing uses PBKDF2-SHA256 (cross-platform). If you switch to bcrypt on Windows, pin a compatible bcrypt version.
-- CORS: set `CORS_ORIGINS` in backend `.env` to include your Vite origin(s), e.g. `http://localhost:5173,http://127.0.0.1:5173`.
-- For production: switch `DATABASE_URL` to Postgres, rotate `SECRET_KEY`, add rate limiting & validations, and prefer HTTP-only cookies for tokens.
+ - Database: SQLite file `dev.db` (auto-created). Delete it to reset users.
+ - Password hashing uses PBKDF2-SHA256 (cross-platform). If you switch to bcrypt on Windows, pin a compatible bcrypt version.
+ - CORS: set `CORS_ORIGINS` in backend `.env` to include your Vite origin(s), e.g. `http://localhost:5173,http://127.0.0.1:5173`.
+ - For production: switch `DATABASE_URL` to Postgres, rotate `SECRET_KEY`, add rate limiting & validations, and prefer HTTP-only cookies for tokens.
+
+### AI run descriptions
+- The backend exposes `POST /ai/run-description`, which takes `{ restaurant, drop_point, eta }` and returns `{ suggestion }`.
+- Configure `.env` with an OpenAI-compatible endpoint (defaults shown in `.env.example`): set `AI_RUN_DESC_KEY` to your API key, and optionally override `AI_RUN_DESC_URL` and `AI_RUN_DESC_MODEL`.
+- If keys are missing or the provider fails, the API falls back to a deterministic, non-AI string so the UI still shows helpful copy.
 
 ### Troubleshooting
 - Vite error about Node version: install Node 20.19+ or 22.12+.
 - Browser "Failed to fetch": backend not running, wrong port in `.env`, or CORS mismatch—check Network tab and `CORS_ORIGINS`.
 - 405 Method Not Allowed when browsing /auth/register: it’s POST-only—use the form or Swagger UI.
-- Port 5050 access denied on Windows: use an alternate port like 5050 (update frontend `.env`).
+- Port 5000 access denied on Windows: use an alternate port like 5050 (update frontend `.env`).
 - PowerShell cannot activate venv: use `.\.venv\Scripts\python.exe -m uvicorn ...` or `Set-ExecutionPolicy -Scope Process Bypass` temporarily.
 
 
