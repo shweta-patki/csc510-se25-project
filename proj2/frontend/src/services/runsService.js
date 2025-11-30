@@ -92,3 +92,10 @@ export async function verifyOrderPin(runId, orderId, pin) {
     body: JSON.stringify({ pin })
   });
 }
+
+export async function getRunDescriptionSuggestion({ restaurant, drop_point, eta }) {
+  return fetchWithAuth('/ai/run-description', {
+    method: 'POST',
+    body: JSON.stringify({ restaurant, drop_point, eta })
+  });
+}
